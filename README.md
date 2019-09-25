@@ -1,4 +1,4 @@
-Dig.It
+Dig It
 ======
 
 Dig It is a HTML / JavaScript based MMORPG. It is an adventure exploration game with educational value.
