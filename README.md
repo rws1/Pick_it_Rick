@@ -1,7 +1,7 @@
 Dig It
 ======
 
-Dig It is a HTML / JavaScript based MMORPG. It is an adventure exploration game with educational value.
+Dig It is a HTML / JavaScript based MMOPG. It is an adventure exploration game with educational value.
 
 Documentation
 -------------
