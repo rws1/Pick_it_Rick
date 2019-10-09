@@ -31,5 +31,16 @@ Week2:-   Refine Game play
           their regional recycling knowledge by picking the correct regionally recyclable waste from a conveyer 
           belt of garbage. 
 8.
-9.
+9.II. Game explained in details with client side view and anticipated experience:
+        ---------------------------------------------------------------------------
+                 
+         Inclusion pointers - 1. Options when player visits the game page aka homepage and bottons to click etc
+                                  Start Button, Tutorial Button, recycling info. 
+                              2. Player data input - player name (mandetory, default Rick), OTHER: country name (optional), 
+                              gender (optional), age (optional).......
+                                  
+                              3. Levels - 1, 2, 3 - Set in difference backgrounds 1) Home 2) Park 3)Garbage dump.
+                              colour of conveyor belt dictated by background.
+                              
+                              
 10.
