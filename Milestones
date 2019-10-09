@@ -43,4 +43,48 @@ Week2:-   Refine Game play
                               colour of conveyor belt dictated by background.
                               
                               
-10.
+10.              
+                              4. Explain background - e.g. conveyor belt of waste (garbage + recyclable items)
+                              
+                              5. Speed and amount grabage dumped on the conveyor belt will determine 
+                              levels - define speed (distance/time; where time will decrease with inceasing levels); 
+                              define amount and ratio (Robjects: Wobjects; e.g. 2/1) of grabage dumped (number of Robjects:
+                              recyclabes and Wobjects: waste). 
+                                        2 stages - 1 define by Speed for now
+                                                   2 speed and extra items
+                              
+                              6. Define the end of the game-- Time 3 minutes (will means test once built)
+                              
+                              7. Define movement of the player-- left, right, down ? -- keys that code of these actions
+                              
+                              8. Define collision of player with object and scoring details ---
+                              
+                              Options= a. keep it simple but exciting: if player object (Pobject) touches the Robject: 
+                              1 point scored and if Pobject touches the Wobject: no point or -1 point. This has a pontential
+                              to create some excitment as the player will have to avoid the Wobjects- making the game more 
+                              dynamic.
+                                                            
+                              Option =b. give player the option to pickup Robject or Wobject by defining appropriate keys for 
+                              each upon collision for reward (point) if collected in a correct manner. If collected in an 
+                              incorrect manner, the player either doesnt score or scores -1 point- define this definatively.
+                              This version of game reflects day-to-day life and hence is much for educational. 
+                              
+                              option = c when player object (Pobject) interacts with Robject, they have 2 options; pick up or avoid. 
+                              Player can pickup both Gobjects and Robjects, with differing scores 3 for recycling, 1 for garbage.
+                              Players choose with W and R (optional - if they ignore object, they get minus scores). 
+                              
+                               9. End of the game display--- 
+                                         (i) Option to go to next level (level 1; 20, level 2 ; 50, level 3 ; 120).   
+                                         (ii) Present score in location, if no location present moon as location.  
+                                         (iii) Cumulative scores of previous tries --- enhances learning experience 
+                                         (iv) Optional - release their score to public - for buddy battle 
+                                         (v) Essential for educational purpose-- list of ignored  or flasely picked items 
+                                         (based on the scoring format selected) with information on their recycling
+                                         OR little snipits ("Did you know...........") of recycling facts (for app based 
+                                         game this is where adds can come in as well -- adds of pro-recycling companies or 
+                                         products)
+                                         
+                                         Define the End is details w.r.t. databases- perm or temp. 
+                                                        
+                      
+           
