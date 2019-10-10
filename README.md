@@ -1,8 +1,8 @@
-Pick It Rick
+Pick It, Rick
 ======
 
 
-Pick It Rick It is a HTML / JavaScript based MMOPG. It is an adventure exploration game with educational value.
+Pick It, Rick It is a HTML / JavaScript based MMOPG. It is an adventure exploration game with educational value.
 
 
 Documentation
