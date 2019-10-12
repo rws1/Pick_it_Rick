@@ -31,4 +31,8 @@
     loop()
   }
   
+buttonRandomSeed.addEventListener('click',function(){
+  inputSeed.value = Math.random()*100000|0
+})
+
   
