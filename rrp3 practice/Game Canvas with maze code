@@ -3,16 +3,8 @@
 <div>
   <canvas></canvas>
   <ul>
-    <li><input id=width></li>
-    <li><input id=height></li>
-    <li><input id=pathwidth></li>
-    <li><input id=wallwidth></li>
-    <li><input id=outerwidth></li>
-    <li><input id=pathcolor></li>
-    <li><input id=wallcolor></li>
-    <li><input id=seed></li>
-    <li><input id=randomseed /></li>
-  </ul>
+  
+   </ul>
 </div>
 
 //JavaScript (No libraries)
