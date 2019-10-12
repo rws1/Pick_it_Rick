@@ -1,0 +1,34 @@
+// extra code
+
+ //this is for the box input and update dimensions of the canvas
+  check: function(){
+    if(inputWidth.value != width||
+       inputHeight.value != height||
+       inputPathWidth.value != pathWidth||
+       inputWallWidth.value != wall||
+       inputOuterWidth.value != outerWall||
+       inputPathColor.value != pathColor||
+       inputWallColor.value != wallColor||
+       inputSeed.value != seed){
+      settings.update()
+    }
+  },
+  
+  //this is the update function based on the input 
+  update: function(){
+    clearTimeout(timer)
+    width = parseFloat(inputWidth.value)
+    height = parseFloat(inputHeight.value)
+    pathWidth = parseFloat(inputPathWidth.value)
+    wall = parseFloat(inputWallWidth.value)
+    outerWall = parseFloat(inputOuterWidth.value)
+    pathColor = inputPathColor.value
+    wallColor = inputWallColor.value
+    seed = parseFloat(inputSeed.value)
+    x = width/2|0
+    y = height/2|0
+    init()
+    loop()
+  }
+  
+  
