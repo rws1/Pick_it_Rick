@@ -1,0 +1,5 @@
+Plan of action henceforth is the following: 
+Kuda has uploaded folders on GitHub from 01 to 07. These folders represent an example of how the game 'rabbit trap' was created in a stepwise manner using concepts of object-oriented programming that we learnt in java. The game design is in increments to generate the final complex game. We will follow this to create our game. 
+Each folder has classes that communicate with each other and have specific functions of the game. To make sure we understand the game programming, we will distribute understanding each of these classes at every stage (01-07 folders) of the game.  Kuda will take the game class. I shall take the controller and engine classes. And Rob, you will own the display and main classes. If we finish with our classes, we will help others understand their classes. We then explain these to each other so that we are all on the same page. 
+Once we know what every line of the code means, we can change the tiles etc. I have downloaded a bunch of free tiles to use. 
+We will finish this is the next three days so that in the lab of Web programming we can finish up with our game and proceed to the next step.
