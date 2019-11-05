@@ -1,3 +1,5 @@
+
+//fixed time step engine
 const Engine = function(time_step, update, render) {
 
   this.accumulated_time        = 0;// Amount of time that's accumulated since the last update.
