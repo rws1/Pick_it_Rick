@@ -9,7 +9,7 @@ const Display = function(canvas) {
   this.drawMap = function(map, columns) {
 
     for (let index = map.length - 1; index > -1; -- index) {
-
+// the values of the grid are 1 higher than expected because the tile map editor csv file - they start at 1 rather than 0. 
       let value = map[index] - 1;
       let source_x =           (value % this.tile_sheet.columns) * this.tile_sheet.tile_size;
       let source_y = Math.floor(value / this.tile_sheet.columns) * this.tile_sheet.tile_size;
