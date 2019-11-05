@@ -1,5 +1,5 @@
 
-//fixed time step engine
+//fixed time step engine which is all contained and can be adopted to different games
 const Engine = function(time_step, update, render) {
 
   this.accumulated_time        = 0;// Amount of time that's accumulated since the last update.
