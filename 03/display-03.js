@@ -11,6 +11,8 @@ const Display = function(canvas) {
     for (let index = map.length - 1; index > -1; -- index) {
 // the values of the grid are 1 higher than expected because the tile map editor csv file - they start at 1 rather than 0. 
       let value = map[index] - 1;
+// get value from above, the souce x and y values by cutting it from the file. Will go to position "source" then cut 16 pixels
+// (or tile_sheet size)
       let source_x =           (value % this.tile_sheet.columns) * this.tile_sheet.tile_size;
       let source_y = Math.floor(value / this.tile_sheet.columns) * this.tile_sheet.tile_size;
       let destination_x =           (index % columns) * this.tile_sheet.tile_size;
