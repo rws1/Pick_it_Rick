@@ -20,6 +20,10 @@ const Controller = function() {
 
 };
 
+//what is teh difference between this.down and down?
+//this.down= the down key
+//down= any key pressed down which mans active in the update function
+
 Controller.prototype = {
 
   constructor : Controller
