@@ -4,6 +4,8 @@ const Display = function(canvas) {
   this.context = canvas.getContext("2d");
 
   
+  
+  //creates a rectangle and fills it with colour
   this.drawRectangle = function(x, y, width, height, color) {
 
     this.buffer.fillStyle = color;
