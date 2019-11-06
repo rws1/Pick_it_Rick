@@ -16,7 +16,7 @@ Game.prototype = {
 
 };
 
-Game.World = function(friction = 0.8, gravity = 2) {
+Game.World = function(friction = 0.8, gravity = 4) {
 
   this.collider = new Game.World.Collider();
 
@@ -29,28 +29,36 @@ Game.World = function(friction = 0.8, gravity = 2) {
   /* Here's where I define the new TileSet class. I give it complete control over
   tile_size because there should only be one source for tile_size for both drawing
   and collision as this game won't use scaling on individual objects. */
-  this.tile_set = new Game.World.TileSet(8, 16);
-  this.player   = new Game.World.Object.Player(100, 100);// The player in its new "namespace".
+  this.tile_set = new Game.World.TileSet(128, 128);
+  this.player   = new Game.World.Object.Player(200, 200);// The player in its new "namespace".
 
-  this.map = [48,17,17,17,49,48,18,19,16,17,35,36,
-              10,39,39,39,16,18,39,31,31,31,39,07,
-              10,31,39,31,31,31,39,12,05,05,28,01,
-              35,06,39,39,31,39,39,19,39,39,08,09,
-              02,31,31,47,39,47,39,31,31,04,36,25,
-              10,39,39,31,39,39,39,31,31,31,39,37,
-              10,39,31,04,14,06,39,39,03,39,00,42,
-              49,02,31,31,11,39,39,31,11,00,42,09,
-              08,40,27,13,37,27,13,03,22,34,09,24];
+  this.map = [386,386,386,386,386,386,386,386,386,386,386,386,
 
-  this.collision_map = [00,04,04,04,00,00,04,04,04,04,04,00,
-                        02,00,00,00,12,06,00,00,00,00,00,08,
-                        02,00,00,00,00,00,00,09,05,05,01,00,
-                        00,07,00,00,00,00,00,14,00,00,08,00,
-                        02,00,00,01,00,01,00,00,00,13,04,00,
-                        02,00,00,00,00,00,00,00,00,00,00,08,
-                        02,00,00,13,01,07,00,00,11,00,09,00,
-                        00,03,00,00,10,00,00,00,08,01,00,00,
-                        00,00,01,01,00,01,01,01,00,00,00,00];
+              386,01,386,386,386,386,386,01,386,386,386,386,
+
+              386,386,386,386,386,01,386,386,386,386,386,01,
+
+              386,386,386,386,386,386,386,386,386,386,386,386,
+
+              01,01,386,386,386,386,386,386,386,386,386,386,
+
+              386,386,386,01,386,386,386,386,01,01,386,386,
+
+              386,386,386,386,386,01,386,386,386,386,386,386,
+
+              386,386,386,386,386,386,386,386,386,386,386,386,
+
+              01,01,01,01,01,01,01,01,01,01,01,01];
+
+  this.collision_map = [00,00,00,00,00,00,00,00,00,00,00,00,
+                        00,00,00,00,00,00,00,00,00,00,00,00,
+                        00,00,00,00,00,00,00,00,00,00,00,00,
+                        00,00,00,00,00,00,00,00,00,00,00,00,
+                        01,01,00,00,00,00,00,00,00,00,00,00,
+                        00,00,00,01,00,00,00,00,01,01,00,00,
+                        00,00,00,00,00,01,00,00,00,00,00,00,
+                        00,00,00,00,00,00,00,00,00,00,00,00,
+                        01,01,01,01,01,01,01,01,01,01,01,01];
 
   this.height   = this.tile_set.tile_size * this.rows;   // these changed to use tile_set.tile_size
   this.width    = this.tile_set.tile_size * this.columns;// I got rid of this.tile_size in Game.World
@@ -335,7 +343,7 @@ Game.World.Object.Player.prototype = {
     if (!this.jumping) {
 
       this.jumping     = true;
-      this.velocity_y -= 20;
+      this.velocity_y -= 80;
 
     }
 
@@ -344,14 +352,14 @@ Game.World.Object.Player.prototype = {
   moveLeft: function() {
 
     this.direction_x = -1;// Make sure to set the player's direction.
-    this.velocity_x -= 0.55;
+    this.velocity_x -= 1.5;
 
   },
 
   moveRight:function(frame_set) {
 
     this.direction_x = 1;
-    this.velocity_x += 0.55;
+    this.velocity_x += 1.5;
 
   },
 
