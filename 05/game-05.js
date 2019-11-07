@@ -34,31 +34,31 @@ Game.World = function(friction = 0.8, gravity = 4) {
 
   this.map = [386,386,386,386,386,386,386,386,386,386,386,386,
 
-              386,01,386,386,386,386,386,01,386,386,386,386,
+              260,386,386,386,386,386,258,259,259,259,260,386,
 
-              386,386,386,386,386,01,386,386,386,386,386,01,
+              386,258,259,259,259,260,386,386,386,386,386,258,
+
+              386,386,386,386,386,386,258,259,260,386,386,386,
+
+              259,259,259,260,386,386,386,386,386,258,259,259,
+
+              386,386,386,386,386,386,258,259,260,386,386,386,
+
+              386,258,259,259,259,260,386,386,386,258,259,259,
 
               386,386,386,386,386,386,386,386,386,386,386,386,
 
-              01,01,386,386,386,386,386,386,386,386,386,386,
-
-              386,386,386,01,386,386,386,386,01,01,386,386,
-
-              386,386,386,386,386,01,386,386,386,386,386,386,
-
-              386,386,386,386,386,386,386,386,386,386,386,386,
-
-              01,01,01,01,01,01,01,01,01,01,01,01];
+              00,01,01,01,01,01,01,01,01,01,02,385];
 
   this.collision_map = [00,00,00,00,00,00,00,00,00,00,00,00,
+                        16,00,00,00,00,00,16,16,16,16,16,00,
+                        00,16,16,16,16,16,00,00,00,00,00,16,
+                        00,00,00,00,00,00,16,16,16,00,00,00,
+                        16,16,16,16,00,00,00,00,00,16,16,16,
+                        00,00,00,01,00,00,16,16,16,00,00,00,
+                        00,16,16,16,16,16,00,00,00,16,16,16,
                         00,00,00,00,00,00,00,00,00,00,00,00,
-                        00,00,00,00,00,00,00,00,00,00,00,00,
-                        00,00,00,00,00,00,00,00,00,00,00,00,
-                        01,01,00,00,00,00,00,00,00,00,00,00,
-                        00,00,00,01,00,00,00,00,01,01,00,00,
-                        00,00,00,00,00,01,00,00,00,00,00,00,
-                        00,00,00,00,00,00,00,00,00,00,00,00,
-                        01,01,01,01,01,01,01,01,01,01,01,01];
+                        01,01,01,01,01,01,01,01,01,01,03,00];
 
   this.height   = this.tile_set.tile_size * this.rows;   // these changed to use tile_set.tile_size
   this.width    = this.tile_set.tile_size * this.columns;// I got rid of this.tile_size in Game.World
@@ -119,9 +119,11 @@ Game.World.Collider = function() {
   this.collide = function(value, object, tile_x, tile_y, tile_size) {
 
     switch(value) {
-
+    //top only collisions
       case  1: this.collidePlatformTop      (object, tile_y            ); break;
+    // collis from the right
       case  2: this.collidePlatformRight    (object, tile_x + tile_size); break;
+    // collisions from top and right
       case  3: if (this.collidePlatformTop  (object, tile_y            )) return;// If there's a collision, we don't need to check for anything else.
                this.collidePlatformRight    (object, tile_x + tile_size); break;
       case  4: this.collidePlatformBottom   (object, tile_y + tile_size); break;
@@ -152,6 +154,8 @@ Game.World.Collider = function() {
                if (this.collidePlatformLeft (object, tile_x            )) return;
                if (this.collidePlatformRight(object, tile_x + tile_size)) return;
                this.collidePlatformBottom   (object, tile_y + tile_size); break;
+      case  16: this.collidePlatformTop      (object,tile_y + 35     ); break;
+
 
     }
 
