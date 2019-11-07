@@ -1,4 +1,4 @@
-﻿const Game = function() {
+const Game = function() {
 
   this.world    = new Game.World();
 
@@ -334,11 +334,11 @@ Game.World.Object.Player.prototype = {
   frame_sets: {
 
     "idle-left" : [0],
-    "jump-left" : [1],
-    "move-left" : [2, 3, 4, 5],
-    "idle-right": [6],
-    "jump-right": [7],
-    "move-right": [8, 9, 10, 11]
+    "jump-left" : [0],
+    "move-left" : [0, 1,2, 3, 4,5,6,7,8,9,10,11,12,13,14,15,16,17],
+    "idle-right": [18],
+    "jump-right": [18],
+    "move-right": [18,19,20, 21,22,23,24,25,26,27,28,29,31,32]
 
   },
 
@@ -430,12 +430,18 @@ Game.World.TileSet = function(columns, tile_size) {
   let f = Game.World.TileSet.Frame;
 
   /* An array of all the frames in the tile sheet image. */
-  this.frames = [new f(115,  96, 13, 16, 0, -2), // idle-left
-                 new f( 50,  96, 13, 16, 0, -2), // jump-left
-                 new f(102,  96, 13, 16, 0, -2), new f(89, 96, 13, 16, 0, -2), new f(76, 96, 13, 16, 0, -2), new f(63, 96, 13, 16, 0, -2), // walk-left
-                 new f(  0, 112, 13, 16, 0, -2), // idle-right
-                 new f( 65, 112, 13, 16, 0, -2), // jump-right
-                 new f( 13, 112, 13, 16, 0, -2), new f(26, 112, 13, 16, 0, -2), new f(39, 112, 13, 16, 0, -2), new f(52, 112, 13, 16, 0, -2) // walk-right
+  this.frames = [new f(3, 1215, 60, 65, 0, -50), // idle-left
+                 new f(3, 1215, 60, 65, 0, -50), // jump-left
+                 new f(514, 702, 60, 70, 0, -55), new f(5, 831, 60, 70, 0, -55), new f(129, 957, 60, 70, 0, -55), new f(258, 828, 60, 70, 0, -55), new f(385, 831, 60, 70, 0, -55),
+                 new f(511, 828, 60, 70, 0, -55),new f(3, 955, 60, 70, 0, -55),new f(129, 957, 60, 70, 0, -55),new f(255, 957, 60, 70, 0, -55),
+                 new f(382, 957, 60, 70, 0, -55),new f(508, 955, 60, 70, 0, -55),new f(3, 1086, 60, 70, 0, -55),new f(126, 1081, 60, 70, 0, -55),
+                 new f(253, 1084, 60, 70, 0, -55),new f(387, 1086, 60, 70, 0, -55),new f(516, 1081, 60, 70, 0, -55),new f(3, 1210, 60, 70, 0, -55),new f(132, 1215, 60, 70, 0, -55),// walk-left
+                  new f(258, 1213, 60, 65, 0, -55), // idle-right
+                 new f(382, 1210, 60, 65, 0, -55), // jump-right
+                 new f(258, 1213, 60, 65, 0, -55), new f(387, 1213, 60, 65, 0, -55), new f(511, 1213, 60, 65, 0, -55), new f(3, 1339, 60, 65, 0, -55),
+                new f(129, 1342, 60, 65, 0, -55), new f(255, 1342, 60, 65, 0, -55), new f(387, 1339, 60, 65, 0, -55), new f(514, 1339, 60, 65, 0, -55),
+                new f(5, 1468, 60, 65, 0, -55), new f(126, 1592, 60, 65, 0, -55), new f(253, 1595, 60, 65, 0, -55), new f(511, 1597, 60, 65, 0, -55),
+                new f(3, 1724, 60, 65, 0, -55), new f(129, 1724, 60, 65, 0, -55)// walk-right
                 ];
 
 };
