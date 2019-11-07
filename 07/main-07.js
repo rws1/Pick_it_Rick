@@ -114,7 +114,7 @@ window.addEventListener("load", function(event) {
       grass.y + frame.offset_y, frame.width, frame.height);
 
     }
-    p.setAttribute("style", "color:#FFFFFF; font-size:5em; position:fixed; ");
+    p.setAttribute("style", "color:#FFFFFF; font-size:0.1em; position:fixed; ");
     p.innerHTML = "Mushrooms: " + game.world.carrot_count;
 
     display.render();
