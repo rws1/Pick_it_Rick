@@ -114,8 +114,8 @@ window.addEventListener("load", function(event) {
       grass.y + frame.offset_y, frame.width, frame.height);
 
     }
-
-    p.innerHTML = "Carrots: " + game.world.carrot_count;
+    p.setAttribute("style", "color:#FFFFFF; font-size:5em; position:fixed; ");
+    p.innerHTML = "Mushrooms: " + game.world.carrot_count;
 
     display.render();
 
@@ -158,8 +158,8 @@ window.addEventListener("load", function(event) {
   var engine         = new Engine(1000/30, render, update);
 
   var p              = document.createElement("p");
-  p.setAttribute("style", "color:#c07000; font-size:2.0em; position:fixed;");
-  p.innerHTML = "Carrots: 0";
+  p.setAttribute("style", "color:#FFFFFF; font-size:0.1em; position:fixed; ");
+  p.innerHTML = "Mushroom: 0";
   document.body.appendChild(p);
 
       ////////////////////
@@ -174,7 +174,7 @@ window.addEventListener("load", function(event) {
 
     game.world.setup(zone);
 
-    assets_manager.requestImage("rabbit-trap.png", (image) => {
+    assets_manager.requestImage("RBTFINALSS.png", (image) => {
 
       assets_manager.tile_set_image = image;
 
