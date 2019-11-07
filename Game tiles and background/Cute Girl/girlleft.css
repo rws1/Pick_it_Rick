@@ -1,3 +1,4 @@
+CSS
 #girlleft {
   width: 60px;   /* Viewport-width */
   height: 65px;   /* Viewport-height */
@@ -10,3 +11,6 @@
 @keyframes girlleft {
   100% { background-position: -2393px 0; }
 }
+
+HTML
+<div id="girlleft"></div>
