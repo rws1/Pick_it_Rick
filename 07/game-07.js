@@ -107,6 +107,7 @@ Game.Collider = function() {
                if (this.collidePlatformBottom (object, tile_y + tile_size)) return;
                if (this.collidePlatformLeft   (object, tile_x            )) return;
                    this.collidePlatformRight  (object, tile_x + tile_size); break;
+      case  16: this.collidePlatformTop      (object,tile_y + 35     ); break;
 
     }
 
@@ -233,7 +234,7 @@ Game.Object.prototype = {
 
 };
 
-Game.MovingObject = function(x, y, width, height, velocity_max = 15) {
+Game.MovingObject = function(x, y, width, height, velocity_max = 55) {
 
   Game.Object.call(this, x, y, width, height);
 
@@ -268,7 +269,7 @@ Game.MovingObject.prototype.constructor = Game.MovingObject;
 /* The carrot class extends Game.Object and Game.Animation. */
 Game.Carrot = function(x, y) {
 
-  Game.Object.call(this, x, y, 7, 14);
+  Game.Object.call(this, x, y, 37, 38);
   Game.Animator.call(this, Game.Carrot.prototype.frame_sets["twirl"], 15);
 
   this.frame_index = Math.floor(Math.random() * 2);
@@ -284,7 +285,7 @@ Game.Carrot = function(x, y) {
 };
 Game.Carrot.prototype = {
 
-  frame_sets: { "twirl":[12, 13] },
+  frame_sets: { "twirl":[36, 37] },
 
   updatePosition:function() {
 
@@ -350,18 +351,23 @@ Game.Player.prototype = {
   frame_sets: {
 
     "idle-left" : [0],
-    "jump-left" : [1],
-    "move-left" : [2, 3, 4, 5],
-    "idle-right": [6],
-    "jump-right": [7],
-    "move-right": [8, 9, 10, 11]
+
+   "jump-left" : [0],
+
+   "move-left" : [0, 1,2, 3, 4,5,6,7,8,9,10,11,12,13,14,15,16,17],
+
+   "idle-right": [18],
+
+   "jump-right": [18],
+
+   "move-right": [18,19,20, 21,22,23,24,25,26,27,28,29,31,32]
 
   },
 
   jump: function() {
 
     /* Made it so you can only jump if you aren't falling faster than 10px per frame. */
-    if (!this.jumping && this.velocity_y < 10) {
+    if (!this.jumping && this.velocity_y < 50) {
 
       this.jumping     = true;
       this.velocity_y -= 13;
@@ -439,13 +445,21 @@ Game.TileSet = function(columns, tile_size) {
 
   let f = Game.Frame;
 
-  this.frames = [new f(115,  96, 13, 16, 0, -4), // idle-left
-                 new f( 50,  96, 13, 16, 0, -4), // jump-left
-                 new f(102,  96, 13, 16, 0, -4), new f(89, 96, 13, 16, 0, -4), new f(76, 96, 13, 16, 0, -4), new f(63, 96, 13, 16, 0, -4), // walk-left
-                 new f(  0, 112, 13, 16, 0, -4), // idle-right
-                 new f( 65, 112, 13, 16, 0, -4), // jump-right
-                 new f( 13, 112, 13, 16, 0, -4), new f(26, 112, 13, 16, 0, -4), new f(39, 112, 13, 16, 0, -4), new f(52, 112, 13, 16, 0, -4), // walk-right
-                 new f( 81, 112, 14, 16), new f(96, 112, 16, 16), // carrot
+
+
+  this.frames = [new f(3, 1215, 60, 65, 0, -50), // idle-left
+                  new f(3, 1215, 60, 65, 0, -50), // jump-left
+                  new f(514, 702, 60, 70, 0, -55), new f(5, 831, 60, 70, 0, -55), new f(129, 957, 60, 70, 0, -55), new f(258, 828, 60, 70, 0, -55), new f(385, 831, 60, 70, 0, -55),
+                  new f(511, 828, 60, 70, 0, -55),new f(3, 955, 60, 70, 0, -55),new f(129, 957, 60, 70, 0, -55),new f(255, 957, 60, 70, 0, -55),
+                  new f(382, 957, 60, 70, 0, -55),new f(508, 955, 60, 70, 0, -55),new f(3, 1086, 60, 70, 0, -55),new f(126, 1081, 60, 70, 0, -55),
+                  new f(253, 1084, 60, 70, 0, -55),new f(387, 1086, 60, 70, 0, -55),new f(516, 1081, 60, 70, 0, -55),new f(3, 1210, 60, 70, 0, -55),new f(132, 1215, 60, 70, 0, -55),// walk-left
+                   new f(258, 1213, 60, 65, 0, -55), // idle-right
+                  new f(382, 1210, 60, 65, 0, -55), // jump-right
+                  new f(258, 1213, 60, 65, 0, -55), new f(387, 1213, 60, 65, 0, -55), new f(511, 1213, 60, 65, 0, -55), new f(3, 1339, 60, 65, 0, -55),
+                 new f(129, 1342, 60, 65, 0, -55), new f(255, 1342, 60, 65, 0, -55), new f(387, 1339, 60, 65, 0, -55), new f(514, 1339, 60, 65, 0, -55),
+                 new f(5, 1468, 60, 65, 0, -55), new f(126, 1592, 60, 65, 0, -55), new f(253, 1595, 60, 65, 0, -55), new f(511, 1597, 60, 65, 0, -55),
+                 new f(3, 1724, 60, 65, 0, -55), new f(129, 1724, 60, 65, 0, -55),// walk-right
+                 new f( 383, 594, 60, 65, 0 , -5), new f(508, 594, 60, 65, 0, -5), // Mushroom
                  new f(112, 115, 16,  4), new f(112, 124, 16, 4), new f(112, 119, 16, 4) // grass
                 ];
 
@@ -462,7 +476,7 @@ Game.World = function(friction = 0.85, gravity = 2) {
   this.columns      = 12;
   this.rows         = 9;
 
-  this.tile_set     = new Game.TileSet(8, 16);
+  this.tile_set     = new Game.TileSet(128, 128);
   this.player       = new Game.Player(32, 76);
 
   this.zone_id      = "00";
