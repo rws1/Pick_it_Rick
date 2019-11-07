@@ -1,4 +1,4 @@
-﻿const Game = function() {
+const Game = function() {
 
   this.world    = new Game.World();
 
@@ -209,13 +209,11 @@ Game.Object.prototype = {
   /* Does rectangular collision detection with the center of the object. */
   collideObjectCenter:function(object) {
 
-    let center_x = object.getCenterX();
-    let center_y = object.getCenterY();
+    if      (object.getLeft()   < 0          ) { object.setLeft(0);             object.velocity_x = 0; }
+    else if (object.getRight()  > this.width ) { object.setRight(this.width);   object.velocity_x = 0; }
+    if      (object.getTop()    < 0          ) { object.setTop(0);              object.velocity_y = 0; }
+    else if (object.getBottom() > this.height) { object.setBottom(this.height); object.velocity_y = 0; object.jumping = false; }
 
-    if (center_x < this.getLeft() || center_x > this.getRight() ||
-        center_y < this.getTop()  || center_y > this.getBottom()) return false;
-
-    return true;
 
   },
 
@@ -370,7 +368,7 @@ Game.Player.prototype = {
     if (!this.jumping && this.velocity_y < 50) {
 
       this.jumping     = true;
-      this.velocity_y -= 13;
+      this.velocity_y -= 45;
 
     }
 
@@ -379,14 +377,14 @@ Game.Player.prototype = {
   moveLeft: function() {
 
     this.direction_x = -1;
-    this.velocity_x -= 0.55;
+    this.velocity_x -= 5;
 
   },
 
   moveRight:function(frame_set) {
 
     this.direction_x = 1;
-    this.velocity_x += 0.55;
+    this.velocity_x += 5;
 
   },
 
@@ -466,7 +464,7 @@ Game.TileSet = function(columns, tile_size) {
 };
 Game.TileSet.prototype = { constructor: Game.TileSet };
 
-Game.World = function(friction = 0.85, gravity = 2) {
+Game.World = function(friction = 0.75, gravity = 4) {
 
   this.collider     = new Game.Collider();
 
@@ -477,7 +475,7 @@ Game.World = function(friction = 0.85, gravity = 2) {
   this.rows         = 9;
 
   this.tile_set     = new Game.TileSet(128, 128);
-  this.player       = new Game.Player(32, 76);
+  this.player       = new Game.Player(1000, 1000);
 
   this.zone_id      = "00";
 
@@ -496,8 +494,10 @@ Game.World.prototype = {
 
   collideObject:function(object) {
 
-    /* I got rid of the world boundary collision. Now it's up to the tiles to keep
-    the player from falling out of the world. */
+    if      (object.getLeft()   < 0          ) { object.setLeft(0);             object.velocity_x = 0; }
+    else if (object.getRight()  > this.width ) { object.setRight(this.width);   object.velocity_x = 0; }
+    if      (object.getTop()    < 0          ) { object.setTop(0);              object.velocity_y = 0; }
+    else if (object.getBottom() > this.height) { object.setBottom(this.height); object.velocity_y = 0; object.jumping = false; }
 
     var bottom, left, right, top, value;
 
