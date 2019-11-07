@@ -1,0 +1,12 @@
+#girlleft {
+  width: 60px;   /* Viewport-width */
+  height: 65px;   /* Viewport-height */
+  margin: 2em auto;   /* Little margin */
+  background: transparent url('girlleft.png') 0 0 no-repeat;   /* Our sprite as the viewport background */
+  animation: girlleft 1s steps(18) infinite; /* The Animation */
+}
+
+/* Animation keyframes for the sprite */
+@keyframes girlleft {
+  100% { background-position: -2393px 0; }
+}
