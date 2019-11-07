@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html>
+<body> 'Hello World'</body>
+
+
+<style media="screen">
+
+
+  #lefttest {
+    width: 60px;   /* Viewport-width */
+    height: 65px;   /* Viewport-height */
+    margin: 30em auto;   /* Little margin */
+    background: transparent url('lefttest.png') /*0 0 no-repeat*/;   /* Our sprite as the viewport background */
+    animation: lefttest 20s steps(15) infinite; /* The Animation */
+
+  }
+
+  /* Animation keyframes for the sprite */
+  @keyframes lefttest {
+    100% { background-position: -2393px 0; }
+  }
+</style>
+<div id= "lefttest"></div>
+
+</html>
