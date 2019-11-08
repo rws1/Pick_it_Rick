@@ -177,7 +177,7 @@ window.addEventListener("load", function(event) {
 
     game.world.setup(zone);
 
-    assets_manager.requestImage("RBTFINALSS.png", (image) => {
+    assets_manager.requestImage("GrassTest.png", (image) => {
 
       assets_manager.tile_set_image = image;
 
@@ -193,3 +193,4 @@ window.addEventListener("load", function(event) {
   window.addEventListener("resize" , resize);
 
 });
+
