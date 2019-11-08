@@ -9,163 +9,114 @@ const Game = function() {
   };
 
 };
+Game.prototype = { constructor : Game };
 
-Game.prototype = {
+// Made the default animation type "loop":
+Game.Animator = function(frame_set, delay, mode = "loop") {
 
-  constructor : Game,
+ this.count       = 0;
+ this.delay       = (delay >= 1) ? delay : 1;
+ this.frame_set   = frame_set;
+ this.frame_index = 0;
+ this.frame_value = frame_set[0];
+ this.mode        = mode;
+
+};
+Game.Animator.prototype = {
+
+ constructor:Game.Animator,
+
+ animate:function() {
+
+   switch(this.mode) {
+
+     case "loop" : this.loop(); break;
+     case "pause":              break;
+
+   }
+
+ },
+
+ changeFrameSet(frame_set, mode, delay = 10, frame_index = 0) {
+
+   if (this.frame_set === frame_set) { return; }
+
+   this.count       = 0;
+   this.delay       = delay;
+   this.frame_set   = frame_set;
+   this.frame_index = frame_index;
+   this.frame_value = frame_set[frame_index];
+   this.mode        = mode;
+
+ },
+
+ loop:function() {
+
+   this.count ++;
+
+   while(this.count > this.delay) {
+
+     this.count -= this.delay;
+
+     this.frame_index = (this.frame_index < this.frame_set.length - 1) ? this.frame_index + 1 : 0;
+
+     this.frame_value = this.frame_set[this.frame_index];
+
+   }
+
+ }
 
 };
 
-Game.World = function(friction = 0.8, gravity = 4) {
+Game.Collider = function() {
 
-  this.collider = new Game.World.Collider();
-
-  this.friction = friction;
-  this.gravity  = gravity;
-
-  this.columns   = 12;
-  this.rows      = 9;
-
-  /* Here's where I define the new TileSet class. I give it complete control over
-  tile_size because there should only be one source for tile_size for both drawing
-  and collision as this game won't use scaling on individual objects. */
-  this.tile_set = new Game.World.TileSet(128, 128);
-  this.player   = new Game.World.Object.Player(200, 200);// The player in its new "namespace".
-
-  this.map = [386,386,386,386,386,386,386,386,386,386,386,386,
-
-              260,386,386,386,386,386,258,259,259,259,260,386,
-
-              386,258,259,259,259,260,386,386,386,386,386,258,
-
-              386,386,386,386,386,386,258,259,260,386,386,386,
-
-              259,259,259,260,386,386,386,386,386,258,259,259,
-
-              386,386,386,386,386,386,258,259,260,386,386,386,
-
-              386,258,259,259,259,260,386,386,386,258,259,259,
-
-              386,386,386,386,386,386,386,386,386,386,386,386,
-
-              00,01,01,01,01,01,01,01,01,01,02,385];
-
-  this.collision_map = [00,00,00,00,00,00,00,00,00,00,00,00,
-                        16,00,00,00,00,00,16,16,16,16,16,00,
-                        00,16,16,16,16,16,00,00,00,00,00,16,
-                        00,00,00,00,00,00,16,16,16,00,00,00,
-                        16,16,16,16,00,00,00,00,00,16,16,16,
-                        00,00,00,01,00,00,16,16,16,00,00,00,
-                        00,16,16,16,16,16,00,00,00,16,16,16,
-                        00,00,00,00,00,00,00,00,00,00,00,00,
-                        01,01,01,01,01,01,01,01,01,01,03,00];
-
-  this.height   = this.tile_set.tile_size * this.rows;   // these changed to use tile_set.tile_size
-  this.width    = this.tile_set.tile_size * this.columns;// I got rid of this.tile_size in Game.World
-
-};
-
-Game.World.prototype = {
-
-  constructor: Game.World,
-
-  collideObject:function(object) {
-
-    if      (object.getLeft()   < 0          ) { object.setLeft(0);             object.velocity_x = 0; }
-    else if (object.getRight()  > this.width ) { object.setRight(this.width);   object.velocity_x = 0; }
-    if      (object.getTop()    < 0          ) { object.setTop(0);              object.velocity_y = 0; }
-    else if (object.getBottom() > this.height) { object.setBottom(this.height); object.velocity_y = 0; object.jumping = false; }
-
-    var bottom, left, right, top, value;
-
-    top    = Math.floor(object.getTop()    / this.tile_set.tile_size);
-    left   = Math.floor(object.getLeft()   / this.tile_set.tile_size);
-    value  = this.collision_map[top * this.columns + left];
-    this.collider.collide(value, object, left * this.tile_set.tile_size, top * this.tile_set.tile_size, this.tile_set.tile_size);
-
-    top    = Math.floor(object.getTop()    / this.tile_set.tile_size);
-    right  = Math.floor(object.getRight()  / this.tile_set.tile_size);
-    value  = this.collision_map[top * this.columns + right];
-    this.collider.collide(value, object, right * this.tile_set.tile_size, top * this.tile_set.tile_size, this.tile_set.tile_size);
-
-    bottom = Math.floor(object.getBottom() / this.tile_set.tile_size);
-    left   = Math.floor(object.getLeft()   / this.tile_set.tile_size);
-    value  = this.collision_map[bottom * this.columns + left];
-    this.collider.collide(value, object, left * this.tile_set.tile_size, bottom * this.tile_set.tile_size, this.tile_set.tile_size);
-
-    bottom = Math.floor(object.getBottom() / this.tile_set.tile_size);
-    right  = Math.floor(object.getRight()  / this.tile_set.tile_size);
-    value  = this.collision_map[bottom * this.columns + right];
-    this.collider.collide(value, object, right * this.tile_set.tile_size, bottom * this.tile_set.tile_size, this.tile_set.tile_size);
-
-  },
-
-  /* This function changed to update the player's position and then do collision,
-  and then update the animation based on the player's final condition. */
-  update:function() {
-
-    this.player.updatePosition(this.gravity, this.friction);
-
-    this.collideObject(this.player);
-
-    this.player.updateAnimation();
-
-  }
-
-};
-
-Game.World.Collider = function() {
-
+  /* I changed this so all the checks happen in y first order. */
   this.collide = function(value, object, tile_x, tile_y, tile_size) {
 
     switch(value) {
-    //top only collisions
-      case  1: this.collidePlatformTop      (object, tile_y            ); break;
-    // collis from the right
-      case  2: this.collidePlatformRight    (object, tile_x + tile_size); break;
-    // collisions from top and right
-      case  3: if (this.collidePlatformTop  (object, tile_y            )) return;// If there's a collision, we don't need to check for anything else.
-               this.collidePlatformRight    (object, tile_x + tile_size); break;
-      case  4: this.collidePlatformBottom   (object, tile_y + tile_size); break;
-      case  5: if (this.collidePlatformTop  (object, tile_y            )) return;
-               this.collidePlatformBottom   (object, tile_y + tile_size); break;
-      case  6: if (this.collidePlatformRight(object, tile_x + tile_size)) return;
-               this.collidePlatformBottom   (object, tile_y + tile_size); break;
-      case  7: if (this.collidePlatformTop  (object, tile_y            )) return;
-               if (this.collidePlatformRight(object, tile_x + tile_size)) return;
-               this.collidePlatformBottom   (object, tile_y + tile_size); break;
-      case  8: this.collidePlatformLeft     (object, tile_x            ); break;
-      case  9: if (this.collidePlatformTop  (object, tile_y            )) return;
-               this.collidePlatformLeft     (object, tile_x            ); break;
-      case 10: if (this.collidePlatformLeft (object, tile_x            )) return;
-               this.collidePlatformRight    (object, tile_x + tile_size); break;
-      case 11: if (this.collidePlatformTop  (object, tile_y            )) return;
-               if (this.collidePlatformLeft (object, tile_x            )) return;
-               this.collidePlatformRight    (object, tile_x + tile_size); break;
-      case 12: if (this.collidePlatformLeft (object, tile_x            )) return;
-               this.collidePlatformBottom   (object, tile_y + tile_size); break;
-      case 13: if (this.collidePlatformTop  (object, tile_y            )) return;
-               if (this.collidePlatformLeft (object, tile_x            )) return;
-               this.collidePlatformBottom   (object, tile_y + tile_size); break;
-      case 14: if (this.collidePlatformLeft (object, tile_x            )) return;
-               if (this.collidePlatformRight(object, tile_x + tile_size)) return; // Had to change this since part 4. I forgot to add tile_size
-               this.collidePlatformBottom   (object, tile_y + tile_size); break;
-      case 15: if (this.collidePlatformTop  (object, tile_y            )) return;
-               if (this.collidePlatformLeft (object, tile_x            )) return;
-               if (this.collidePlatformRight(object, tile_x + tile_size)) return;
-               this.collidePlatformBottom   (object, tile_y + tile_size); break;
-      case  16: this.collidePlatformTop      (object,tile_y + 35     ); break;
 
+      case  1:     this.collidePlatformTop    (object, tile_y            ); break;
+      case  2:     this.collidePlatformRight  (object, tile_x + tile_size); break;
+      case  3: if (this.collidePlatformTop    (object, tile_y            )) return;
+                   this.collidePlatformRight  (object, tile_x + tile_size); break;
+      case  4:     this.collidePlatformBottom (object, tile_y + tile_size); break;
+      case  5: if (this.collidePlatformTop    (object, tile_y            )) return;
+                   this.collidePlatformBottom (object, tile_y + tile_size); break;
+      case  6: if (this.collidePlatformRight  (object, tile_x + tile_size)) return;
+                   this.collidePlatformBottom (object, tile_y + tile_size); break;
+      case  7: if (this.collidePlatformTop    (object, tile_y            )) return;
+               if (this.collidePlatformBottom (object, tile_y + tile_size)) return;
+                   this.collidePlatformRight  (object, tile_x + tile_size); break;
+      case  8:     this.collidePlatformLeft   (object, tile_x            ); break;
+      case  9: if (this.collidePlatformTop    (object, tile_y            )) return;
+                   this.collidePlatformLeft   (object, tile_x            ); break;
+      case 10: if (this.collidePlatformLeft   (object, tile_x            )) return;
+                   this.collidePlatformRight  (object, tile_x + tile_size); break;
+      case 11: if (this.collidePlatformTop    (object, tile_y            )) return;
+               if (this.collidePlatformLeft   (object, tile_x            )) return;
+                   this.collidePlatformRight  (object, tile_x + tile_size); break;
+      case 12: if (this.collidePlatformBottom (object, tile_y + tile_size)) return;
+                   this.collidePlatformLeft   (object, tile_x            ); break;
+      case 13: if (this.collidePlatformTop    (object, tile_y            )) return;
+               if (this.collidePlatformBottom (object, tile_y + tile_size)) return;
+                   this.collidePlatformLeft   (object, tile_x            ); break;
+      case 14: if (this.collidePlatformBottom (object, tile_y + tile_size)) return;
+               if (this.collidePlatformLeft   (object, tile_x            )) return;
+                   this.collidePlatformRight  (object, tile_x + tile_size); break;
+      case 15: if (this.collidePlatformTop    (object, tile_y            )) return;
+               if (this.collidePlatformBottom (object, tile_y + tile_size)) return;
+               if (this.collidePlatformLeft   (object, tile_x            )) return;
+                   this.collidePlatformRight  (object, tile_x + tile_size); break;
+      case  16: this.collidePlatformTop      (object,tile_y + 35     ); break;
 
     }
 
   }
 
 };
+Game.Collider.prototype = {
 
-Game.World.Collider.prototype = {
-
-  constructor: Game.World.Collider,
+  constructor: Game.Collider,
 
   collidePlatformBottom:function(object, tile_bottom) {
 
@@ -218,104 +169,174 @@ Game.World.Collider.prototype = {
 
  };
 
-Game.World.Object = function(x, y, width, height) {
+// Added default values of 0 for offset_x and offset_y
+Game.Frame = function(x, y, width, height, offset_x = 0, offset_y = 0) {
+
+  this.x        = x;
+  this.y        = y;
+  this.width    = width;
+  this.height   = height;
+  this.offset_x = offset_x;
+  this.offset_y = offset_y;
+
+};
+Game.Frame.prototype = { constructor: Game.Frame };
+
+Game.Object = function(x, y, width, height) {
 
  this.height = height;
  this.width  = width;
  this.x      = x;
- this.x_old  = x;
  this.y      = y;
- this.y_old  = y;
 
 };
+Game.Object.prototype = {
 
-Game.World.Object.prototype = {
+  constructor:Game.Object,
 
-  constructor:Game.World.Object,
+  /* Now does rectangular collision detection. */
+  collideObject:function(object) {
 
-  /* These functions are used to get and set the different side positions of the object. */
-  getBottom:   function()  { return this.y     + this.height; },
-  getLeft:     function()  { return this.x;                   },
-  getRight:    function()  { return this.x     + this.width;  },
-  getTop:      function()  { return this.y;                   },
-  getOldBottom:function()  { return this.y_old + this.height; },
-  getOldLeft:  function()  { return this.x_old;               },
-  getOldRight: function()  { return this.x_old + this.width;  },
-  getOldTop:   function()  { return this.y_old                },
-  setBottom:   function(y) { this.y     = y    - this.height; },
-  setLeft:     function(x) { this.x     = x;                  },
-  setRight:    function(x) { this.x     = x    - this.width;  },
-  setTop:      function(y) { this.y     = y;                  },
-  setOldBottom:function(y) { this.y_old = y    - this.height; },
-  setOldLeft:  function(x) { this.x_old = x;                  },
-  setOldRight: function(x) { this.x_old = x    - this.width;  },
-  setOldTop:   function(y) { this.y_old = y;                  }
+    if (this.getRight()  < object.getLeft()  ||
+        this.getBottom() < object.getTop()   ||
+        this.getLeft()   > object.getRight() ||
+        this.getTop()    > object.getBottom()) return false;
 
-};
-
-Game.World.Object.Animator = function(frame_set, delay) {
-
-  this.count       = 0;
-  this.delay       = (delay >= 1) ? delay : 1;
-  this.frame_set   = frame_set;
-  this.frame_index = 0;
-  this.frame_value = frame_set[0];
-  this.mode        = "pause";
-
-};
-
-Game.World.Object.Animator.prototype = {
-
-  constructor:Game.World.Object.Animator,
-
-  animate:function() {
-
-    switch(this.mode) {
-
-      case "loop" : this.loop(); break;
-      case "pause":              break;
-
-    }
+    return true;
 
   },
 
-  changeFrameSet(frame_set, mode, delay = 10, frame_index = 0) {
+  /* Does rectangular collision detection with the center of the object. */
+  collideObjectCenter:function(object) {
 
-    if (this.frame_set === frame_set) { return; }
+    if      (object.getLeft()   < 0          ) { object.setLeft(0);             object.velocity_x = 0; }
+    else if (object.getRight()  > this.width ) { object.setRight(this.width);   object.velocity_x = 0; }
+    if      (object.getTop()    < 0          ) { object.setTop(0);              object.velocity_y = 0; }
+    else if (object.getBottom() > this.height) { object.setBottom(this.height); object.velocity_y = 0; object.jumping = false; }
 
-    this.count       = 0;
-    this.delay       = delay;
-    this.frame_set   = frame_set;
-    this.frame_index = frame_index;
-    this.frame_value = frame_set[frame_index];
-    this.mode        = mode;
 
   },
 
-  loop:function() {
+  getBottom : function()  { return this.y + this.height;       },
+  getCenterX: function()  { return this.x + this.width  * 0.5; },
+  getCenterY: function()  { return this.y + this.height * 0.5; },
+  getLeft   : function()  { return this.x;                     },
+  getRight  : function()  { return this.x + this.width;        },
+  getTop    : function()  { return this.y;                     },
+  setBottom : function(y) { this.y = y - this.height;          },
+  setCenterX: function(x) { this.x = x - this.width  * 0.5;    },
+  setCenterY: function(y) { this.y = y - this.height * 0.5;    },
+  setLeft   : function(x) { this.x = x;                        },
+  setRight  : function(x) { this.x = x - this.width;           },
+  setTop    : function(y) { this.y = y;                        }
 
-    this.count ++;
+};
 
-    while(this.count > this.delay) {
+Game.MovingObject = function(x, y, width, height, velocity_max = 55) {
 
-      this.count -= this.delay;
+  Game.Object.call(this, x, y, width, height);
 
-      this.frame_index = (this.frame_index < this.frame_set.length - 1) ? this.frame_index + 1 : 0;
+  this.jumping      = false;
+  this.velocity_max = velocity_max;// added velocity_max so velocity can't go past 16
+  this.velocity_x   = 0;
+  this.velocity_y   = 0;
+  this.x_old        = x;
+  this.y_old        = y;
 
-      this.frame_value = this.frame_set[this.frame_index];
+};
+/* I added setCenterX, setCenterY, getCenterX, and getCenterY */
+Game.MovingObject.prototype = {
 
-    }
+  getOldBottom : function()  { return this.y_old + this.height;       },
+  getOldCenterX: function()  { return this.x_old + this.width  * 0.5; },
+  getOldCenterY: function()  { return this.y_old + this.height * 0.5; },
+  getOldLeft   : function()  { return this.x_old;                     },
+  getOldRight  : function()  { return this.x_old + this.width;        },
+  getOldTop    : function()  { return this.y_old;                     },
+  setOldBottom : function(y) { this.y_old = y    - this.height;       },
+  setOldCenterX: function(x) { this.x_old = x    - this.width  * 0.5; },
+  setOldCenterY: function(y) { this.y_old = y    - this.height * 0.5; },
+  setOldLeft   : function(x) { this.x_old = x;                        },
+  setOldRight  : function(x) { this.x_old = x    - this.width;        },
+  setOldTop    : function(y) { this.y_old = y;                        }
+
+};
+Object.assign(Game.MovingObject.prototype, Game.Object.prototype);
+Game.MovingObject.prototype.constructor = Game.MovingObject;
+
+/* The carrot class extends Game.Object and Game.Animation. */
+Game.Carrot = function(x, y) {
+
+  Game.Object.call(this, x, y, 37, 38);
+  Game.Animator.call(this, Game.Carrot.prototype.frame_sets["twirl"], 15);
+
+  this.frame_index = Math.floor(Math.random() * 2);
+
+  /* base_x and base_y are the point around which the carrot revolves. position_x
+  and y are used to track the vector facing away from the base point to give the carrot
+  the floating effect. */
+  this.base_x     = x;
+  this.base_y     = y;
+  this.position_x = Math.random() * Math.PI * 2;
+  this.position_y = this.position_x * 2;
+
+};
+Game.Carrot.prototype = {
+
+  frame_sets: { "twirl":[36, 37] },
+
+  updatePosition:function() {
+
+    this.position_x += 0.1;
+    this.position_y += 0.2;
+
+    this.x = this.base_x + Math.cos(this.position_x) * 2;
+    this.y = this.base_y + Math.sin(this.position_y);
 
   }
 
 };
+Object.assign(Game.Carrot.prototype, Game.Animator.prototype);
+Object.assign(Game.Carrot.prototype, Game.Object.prototype);
+Game.Carrot.prototype.constructor = Game.Carrot;
 
-/* The player now also extends the Game.World.Object.Animator class. I also added
-a direction_x variable to help determine which way the player is facing for animation. */
-Game.World.Object.Player = function(x, y) {
+Game.Grass = function(x, y) {
 
-  Game.World.Object.call(this, 100, 100, 7, 14);
-  Game.World.Object.Animator.call(this, Game.World.Object.Player.prototype.frame_sets["idle-left"], 10);
+  Game.Animator.call(this, Game.Grass.prototype.frame_sets["wave"], 25);
+
+  this.x = x;
+  this.y = y;
+
+};
+Game.Grass.prototype = {
+
+  frame_sets: {
+
+    "wave":[14, 15, 16, 15]
+
+  }
+
+};
+Object.assign(Game.Grass.prototype, Game.Animator.prototype);
+
+Game.Door = function(door) {
+
+ Game.Object.call(this, door.x, door.y, door.width, door.height);
+
+ this.destination_x    = door.destination_x;
+ this.destination_y    = door.destination_y;
+ this.destination_zone = door.destination_zone;
+
+};
+Game.Door.prototype = {};
+Object.assign(Game.Door.prototype, Game.Object.prototype);
+Game.Door.prototype.constructor = Game.Door;
+
+Game.Player = function(x, y) {
+
+  Game.MovingObject.call(this, x, y, 7, 12);
+
+  Game.Animator.call(this, Game.Player.prototype.frame_sets["idle-left"], 10);
 
   this.jumping     = true;
   this.direction_x = -1;
@@ -323,31 +344,31 @@ Game.World.Object.Player = function(x, y) {
   this.velocity_y  = 0;
 
 };
+Game.Player.prototype = {
 
-Game.World.Object.Player.prototype = {
-
-  constructor:Game.World.Object.Player,
-
-  /* The values in these arrays correspond to the TileSet.Frame objects in the tile_set.
-  They are just hardcoded in here now, but when the tileset information is eventually
-  loaded from a json file, this will be allocated dynamically in some sort of loading function. */
   frame_sets: {
 
     "idle-left" : [0],
-    "jump-left" : [0],
-    "move-left" : [0, 1,2, 3, 4,5,6,7,8,9,10,11,12,13,14,15,16,17],
-    "idle-right": [18],
-    "jump-right": [18],
-    "move-right": [18,19,20, 21,22,23,24,25,26,27,28,29,31,32]
+
+   "jump-left" : [0],
+
+   "move-left" : [0, 1,2, 3, 4,5,6,7,8,9,10,11,12,13,14,15,16,17],
+
+   "idle-right": [18],
+
+   "jump-right": [18],
+
+   "move-right": [18,19,20, 21,22,23,24,25,26,27,28,29,31,32]
 
   },
 
   jump: function() {
 
-    if (!this.jumping) {
+    /* Made it so you can only jump if you aren't falling faster than 10px per frame. */
+    if (!this.jumping && this.velocity_y < 50) {
 
       this.jumping     = true;
-      this.velocity_y -= 80;
+      this.velocity_y -= 45;
 
     }
 
@@ -355,22 +376,18 @@ Game.World.Object.Player.prototype = {
 
   moveLeft: function() {
 
-    this.direction_x = -1;// Make sure to set the player's direction.
-    this.velocity_x -= 1.5;
+    this.direction_x = -1;
+    this.velocity_x -= 5;
 
   },
 
   moveRight:function(frame_set) {
 
     this.direction_x = 1;
-    this.velocity_x += 1.5;
+    this.velocity_x += 5;
 
   },
 
-  /* Because animation is entirely dependent on the player's movement at this point,
-  I made a separate update function just for animation to be called after collision
-  between the player and the world. This gives the most accurate animations for what
-  the player is doing movement wise on the screen. */
   updateAnimation:function() {
 
     if (this.velocity_y < 0) {
@@ -394,74 +411,216 @@ Game.World.Object.Player.prototype = {
 
   },
 
-  /* This used to be the update function, but now it's a little bit better. It takes
-  gravity and friction as parameters so the player class can decide what to do with
-  them. */
-  updatePosition:function(gravity, friction) {// Changed from the update function
+  updatePosition:function(gravity, friction) {
 
     this.x_old = this.x;
     this.y_old = this.y;
+
     this.velocity_y += gravity;
+    this.velocity_x *= friction;
+
+    /* Made it so that velocity cannot exceed velocity_max */
+    if (Math.abs(this.velocity_x) > this.velocity_max)
+    this.velocity_x = this.velocity_max * Math.sign(this.velocity_x);
+
+    if (Math.abs(this.velocity_y) > this.velocity_max)
+    this.velocity_y = this.velocity_max * Math.sign(this.velocity_y);
+
     this.x    += this.velocity_x;
     this.y    += this.velocity_y;
-
-    this.velocity_x *= friction;
-    this.velocity_y *= friction;
 
   }
 
 };
+Object.assign(Game.Player.prototype, Game.MovingObject.prototype);
+Object.assign(Game.Player.prototype, Game.Animator.prototype);
+Game.Player.prototype.constructor = Game.Player;
 
-/* Double prototype inheritance from Object and Animator. */
-Object.assign(Game.World.Object.Player.prototype, Game.World.Object.prototype);
-Object.assign(Game.World.Object.Player.prototype, Game.World.Object.Animator.prototype);
-Game.World.Object.Player.prototype.constructor = Game.World.Object.Player;
-
-/* The TileSheet class was taken from the Display class and renamed TileSet.
-It does all the same stuff, but it doesn't have an image reference and it also
-defines specific regions in the tile set image that correspond to the player's sprite
-animation frames. Later, this will all be set in a level loading function just in case
-I want to add functionality to add in another tile sheet graphic with different terrain. */
-Game.World.TileSet = function(columns, tile_size) {
+Game.TileSet = function(columns, tile_size) {
 
   this.columns    = columns;
   this.tile_size  = tile_size;
 
-  let f = Game.World.TileSet.Frame;
+  let f = Game.Frame;
 
-  /* An array of all the frames in the tile sheet image. */
+
+
   this.frames = [new f(3, 1215, 60, 65, 0, -50), // idle-left
-                 new f(3, 1215, 60, 65, 0, -50), // jump-left
-                 new f(514, 702, 60, 70, 0, -55), new f(5, 831, 60, 70, 0, -55), new f(129, 957, 60, 70, 0, -55), new f(258, 828, 60, 70, 0, -55), new f(385, 831, 60, 70, 0, -55),
-                 new f(511, 828, 60, 70, 0, -55),new f(3, 955, 60, 70, 0, -55),new f(129, 957, 60, 70, 0, -55),new f(255, 957, 60, 70, 0, -55),
-                 new f(382, 957, 60, 70, 0, -55),new f(508, 955, 60, 70, 0, -55),new f(3, 1086, 60, 70, 0, -55),new f(126, 1081, 60, 70, 0, -55),
-                 new f(253, 1084, 60, 70, 0, -55),new f(387, 1086, 60, 70, 0, -55),new f(516, 1081, 60, 70, 0, -55),new f(3, 1210, 60, 70, 0, -55),new f(132, 1215, 60, 70, 0, -55),// walk-left
-                  new f(258, 1213, 60, 65, 0, -55), // idle-right
-                 new f(382, 1210, 60, 65, 0, -55), // jump-right
-                 new f(258, 1213, 60, 65, 0, -55), new f(387, 1213, 60, 65, 0, -55), new f(511, 1213, 60, 65, 0, -55), new f(3, 1339, 60, 65, 0, -55),
-                new f(129, 1342, 60, 65, 0, -55), new f(255, 1342, 60, 65, 0, -55), new f(387, 1339, 60, 65, 0, -55), new f(514, 1339, 60, 65, 0, -55),
-                new f(5, 1468, 60, 65, 0, -55), new f(126, 1592, 60, 65, 0, -55), new f(253, 1595, 60, 65, 0, -55), new f(511, 1597, 60, 65, 0, -55),
-                new f(3, 1724, 60, 65, 0, -55), new f(129, 1724, 60, 65, 0, -55)// walk-right
+                  new f(3, 1215, 60, 65, 0, -50), // jump-left
+                  new f(514, 702, 60, 70, 0, -55), new f(5, 831, 60, 70, 0, -55), new f(129, 957, 60, 70, 0, -55), new f(258, 828, 60, 70, 0, -55), new f(385, 831, 60, 70, 0, -55),
+                  new f(511, 828, 60, 70, 0, -55),new f(3, 955, 60, 70, 0, -55),new f(129, 957, 60, 70, 0, -55),new f(255, 957, 60, 70, 0, -55),
+                  new f(382, 957, 60, 70, 0, -55),new f(508, 955, 60, 70, 0, -55),new f(3, 1086, 60, 70, 0, -55),new f(126, 1081, 60, 70, 0, -55),
+                  new f(253, 1084, 60, 70, 0, -55),new f(387, 1086, 60, 70, 0, -55),new f(516, 1081, 60, 70, 0, -55),new f(3, 1210, 60, 70, 0, -55),new f(132, 1215, 60, 70, 0, -55),// walk-left
+                   new f(258, 1213, 60, 65, 0, -55), // idle-right
+                  new f(382, 1210, 60, 65, 0, -55), // jump-right
+                  new f(258, 1213, 60, 65, 0, -55), new f(387, 1213, 60, 65, 0, -55), new f(511, 1213, 60, 65, 0, -55), new f(3, 1339, 60, 65, 0, -55),
+                 new f(129, 1342, 60, 65, 0, -55), new f(255, 1342, 60, 65, 0, -55), new f(387, 1339, 60, 65, 0, -55), new f(514, 1339, 60, 65, 0, -55),
+                 new f(5, 1468, 60, 65, 0, -55), new f(126, 1592, 60, 65, 0, -55), new f(253, 1595, 60, 65, 0, -55), new f(511, 1597, 60, 65, 0, -55),
+                 new f(3, 1724, 60, 65, 0, -55), new f(129, 1724, 60, 65, 0, -55),// walk-right
+                 new f( 383, 594, 60, 65, 0 , -5), new f(508, 594, 60, 65, 0, -5), // Mushroom
+                 new f(112, 115, 16,  4), new f(112, 124, 16, 4), new f(112, 119, 16, 4) // grass
                 ];
 
 };
+Game.TileSet.prototype = { constructor: Game.TileSet };
 
-Game.World.TileSet.prototype = { constructor: Game.World.TileSet };
+Game.World = function(friction = 0.75, gravity = 4) {
 
-/* The Frame class just defines a region in a tilesheet to cut out. It's a rectangle.
-It has an x and y offset used for drawing the cut out sprite image to the screen,
-which allows sprites to be positioned anywhere in the tile sheet image rather than
-being forced to adhere to a grid like tile graphics. This is more natural because
-sprites often fluctuate in size and won't always fit in a 16x16 grid. */
-Game.World.TileSet.Frame = function(x, y, width, height, offset_x, offset_y) {
+  this.collider     = new Game.Collider();
 
-  this.x        = x;
-  this.y        = y;
-  this.width    = width;
-  this.height   = height;
-  this.offset_x = offset_x;
-  this.offset_y = offset_y;
+  this.friction     = friction;
+  this.gravity      = gravity;
+
+  this.columns      = 12;
+  this.rows         = 9;
+
+  this.tile_set     = new Game.TileSet(128, 128);
+  this.player       = new Game.Player(1000, 1000);
+
+  this.zone_id      = "00";
+
+  this.carrots      = [];// the array of carrots in this zone;
+  this.carrot_count = 0;// the number of carrots you have.
+  this.doors        = [];
+  this.door         = undefined;
+
+  this.height       = this.tile_set.tile_size * this.rows;
+  this.width        = this.tile_set.tile_size * this.columns;
 
 };
+Game.World.prototype = {
 
-Game.World.TileSet.Frame.prototype = { constructor: Game.World.TileSet.Frame };
+  constructor: Game.World,
+
+  collideObject:function(object) {
+
+    if      (object.getLeft()   < 0          ) { object.setLeft(0);             object.velocity_x = 0; }
+    else if (object.getRight()  > this.width ) { object.setRight(this.width);   object.velocity_x = 0; }
+    if      (object.getTop()    < 0          ) { object.setTop(0);              object.velocity_y = 0; }
+    else if (object.getBottom() > this.height) { object.setBottom(this.height); object.velocity_y = 0; object.jumping = false; }
+
+    var bottom, left, right, top, value;
+
+    top    = Math.floor(object.getTop()    / this.tile_set.tile_size);
+    left   = Math.floor(object.getLeft()   / this.tile_set.tile_size);
+    value  = this.collision_map[top * this.columns + left];
+    this.collider.collide(value, object, left * this.tile_set.tile_size, top * this.tile_set.tile_size, this.tile_set.tile_size);
+
+    top    = Math.floor(object.getTop()    / this.tile_set.tile_size);
+    right  = Math.floor(object.getRight()  / this.tile_set.tile_size);
+    value  = this.collision_map[top * this.columns + right];
+    this.collider.collide(value, object, right * this.tile_set.tile_size, top * this.tile_set.tile_size, this.tile_set.tile_size);
+
+    bottom = Math.floor(object.getBottom() / this.tile_set.tile_size);
+    left   = Math.floor(object.getLeft()   / this.tile_set.tile_size);
+    value  = this.collision_map[bottom * this.columns + left];
+    this.collider.collide(value, object, left * this.tile_set.tile_size, bottom * this.tile_set.tile_size, this.tile_set.tile_size);
+
+    bottom = Math.floor(object.getBottom() / this.tile_set.tile_size);
+    right  = Math.floor(object.getRight()  / this.tile_set.tile_size);
+    value  = this.collision_map[bottom * this.columns + right];
+    this.collider.collide(value, object, right * this.tile_set.tile_size, bottom * this.tile_set.tile_size, this.tile_set.tile_size);
+
+  },
+
+  setup:function(zone) {
+
+    this.carrots            = new Array();
+    this.doors              = new Array();
+    this.grass              = new Array();
+    this.collision_map      = zone.collision_map;
+    this.graphical_map      = zone.graphical_map;
+    this.columns            = zone.columns;
+    this.rows               = zone.rows;
+    this.zone_id            = zone.id;
+
+    for (let index = zone.carrots.length - 1; index > -1; -- index) {
+
+      let carrot = zone.carrots[index];
+      this.carrots[index] = new Game.Carrot(carrot[0] * this.tile_set.tile_size + 5, carrot[1] * this.tile_set.tile_size - 2);
+
+    }
+
+    for (let index = zone.doors.length - 1; index > -1; -- index) {
+
+      let door = zone.doors[index];
+      this.doors[index] = new Game.Door(door);
+
+    }
+
+    for (let index = zone.grass.length - 1; index > -1; -- index) {
+
+      let grass = zone.grass[index];
+      this.grass[index] = new Game.Grass(grass[0] * this.tile_set.tile_size, grass[1] * this.tile_set.tile_size + 12);
+
+    }
+
+    if (this.door) {
+
+      if (this.door.destination_x != -1) {
+
+        this.player.setCenterX   (this.door.destination_x);
+        this.player.setOldCenterX(this.door.destination_x);// It's important to reset the old position as well.
+
+      }
+
+      if (this.door.destination_y != -1) {
+
+        this.player.setCenterY   (this.door.destination_y);
+        this.player.setOldCenterY(this.door.destination_y);
+
+      }
+
+      this.door = undefined;// Make sure to reset this.door so we don't trigger a zone load.
+
+    }
+
+  },
+
+  update:function() {
+
+    this.player.updatePosition(this.gravity, this.friction);
+
+    this.collideObject(this.player);
+
+    for (let index = this.carrots.length - 1; index > -1; -- index) {
+
+      let carrot = this.carrots[index];
+
+      carrot.updatePosition();
+      carrot.animate();
+
+      if (carrot.collideObject(this.player)) {
+
+        this.carrots.splice(this.carrots.indexOf(carrot), 1);
+        this.carrot_count ++;
+
+      }
+
+    }
+
+    for(let index = this.doors.length - 1; index > -1; -- index) {
+
+      let door = this.doors[index];
+
+      if (door.collideObjectCenter(this.player)) {
+
+        this.door = door;
+
+      };
+
+    }
+
+    for (let index = this.grass.length - 1; index > -1; -- index) {
+
+      let grass = this.grass[index];
+
+      grass.animate();
+
+    }
+
+    this.player.updateAnimation();
+
+  }
+
+};
