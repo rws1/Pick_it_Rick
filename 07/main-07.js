@@ -56,6 +56,9 @@ window.addEventListener("load", function(event) {
     //// FUNCTIONS ////
   ///////////////////
 
+  var audio = new Audio('Croc.mp3');
+  audio.play();
+
   var keyDownUp = function(event) {
 
     controller.keyDownUp(event.type, event.keyCode);
