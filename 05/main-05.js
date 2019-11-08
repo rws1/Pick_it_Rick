@@ -2,11 +2,15 @@ window.addEventListener("load", function(event) {
 
   "use strict";
 
-  //// CLASSES ////
+  //// CONSTANTS ////
 
-  /* The assets manager will be responsible for loading and storing graphics for
-  the game. Because it only has to load the tilesheet image right now, it's very specific
-  about what it does. */
+  const ZONE_PREFIX = "05/zone";
+  const ZONE_SUFFIX = ".json";
+
+      /////////////////
+    //// CLASSES ////
+  /////////////////
+
   const AssetsManager = function() {
 
     this.tile_set_image = undefined;
@@ -17,25 +21,44 @@ window.addEventListener("load", function(event) {
 
     constructor: Game.AssetsManager,
 
-    loadTileSetImage:function(url, callback) {
+    requestJSON:function(url, callback) {
 
-      this.tile_set_image = new Image();
+      let request = new XMLHttpRequest();
 
-      this.tile_set_image.addEventListener("load", function(event) {
+      request.addEventListener("load", function(event) {
 
-        callback();
+        callback(JSON.parse(this.responseText));
 
-      }, { once : true});
+      }, { once:true });
 
-      this.tile_set_image.src = url;
+      request.open("GET", url);
+      request.send();
 
-    }
+    },
+
+    requestImage:function(url, callback) {
+
+      let image = new Image();
+
+      image.addEventListener("load", function(event) {
+
+        callback(image);
+
+      }, { once:true });
+
+      image.src = url;
+
+    },
 
   };
 
       ///////////////////
     //// FUNCTIONS ////
   ///////////////////
+
+  var audio = new Audio('CrocSnow.mp3');
+  audio.play();
+
 
   var keyDownUp = function(event) {
 
@@ -48,21 +71,55 @@ window.addEventListener("load", function(event) {
     display.resize(document.documentElement.clientWidth, document.documentElement.clientHeight, game.world.height / game.world.width);
     display.render();
 
+    var rectangle = display.context.canvas.getBoundingClientRect();
+
+    p.style.left = rectangle.left + "px";
+    p.style.top  = rectangle.top + "px";
+    p.style.fontSize = game.world.tile_set.tile_size * rectangle.height / game.world.height + "px";
+
   };
 
-  /* The render function uses the new display methods now. I will eventually have to create
-  some sort of object manager when I get more objects on the screen. */
   var render = function() {
 
-    display.drawMap   (assets_manager.tile_set_image,
-    game.world.tile_set.columns, game.world.map, game.world.columns,  game.world.tile_set.tile_size);
+    var frame = undefined;
 
-    let frame = game.world.tile_set.frames[game.world.player.frame_value];
+    display.drawMap   (assets_manager.tile_set_image,
+    game.world.tile_set.columns, game.world.graphical_map, game.world.columns,  game.world.tile_set.tile_size);
+
+    for (let index = game.world.carrots.length - 1; index > -1; -- index) {
+
+      let carrot = game.world.carrots[index];
+
+      frame = game.world.tile_set.frames[carrot.frame_value];
+
+      display.drawObject(assets_manager.tile_set_image,
+      frame.x, frame.y,
+      carrot.x + Math.floor(carrot.width * 0.5 - frame.width * 0.5) + frame.offset_x,
+      carrot.y + frame.offset_y, frame.width, frame.height);
+
+    }
+
+    frame = game.world.tile_set.frames[game.world.player.frame_value];
 
     display.drawObject(assets_manager.tile_set_image,
     frame.x, frame.y,
     game.world.player.x + Math.floor(game.world.player.width * 0.5 - frame.width * 0.5) + frame.offset_x,
     game.world.player.y + frame.offset_y, frame.width, frame.height);
+
+    for (let index = game.world.grass.length - 1; index > -1; -- index) {
+
+      let grass = game.world.grass[index];
+
+      frame = game.world.tile_set.frames[grass.frame_value];
+
+      display.drawObject(assets_manager.tile_set_image,
+      frame.x, frame.y,
+      grass.x + frame.offset_x,
+      grass.y + frame.offset_y, frame.width, frame.height);
+
+    }
+    p.setAttribute("style", "color:#FFFFFF; font-size:0.1em; position:fixed; ");
+    p.innerHTML = "Mushrooms: " + game.world.carrot_count;
 
     display.render();
 
@@ -76,39 +133,64 @@ window.addEventListener("load", function(event) {
 
     game.update();
 
+    if (game.world.door) {
+
+      engine.stop();
+
+      assets_manager.requestJSON(ZONE_PREFIX + game.world.door.destination_zone + ZONE_SUFFIX, (zone) => {
+
+        game.world.setup(zone);
+
+        engine.start();
+
+      });
+
+      return;
+
+    }
+
   };
 
       /////////////////
     //// OBJECTS ////
   /////////////////
 
-  var assets_manager = new AssetsManager();// Behold the new assets manager!
+  var assets_manager = new AssetsManager();
   var controller     = new Controller();
   var display        = new Display(document.querySelector("canvas"));
   var game           = new Game();
   var engine         = new Engine(1000/30, render, update);
 
+  var p              = document.createElement("p");
+  p.setAttribute("style", "color:#FFFFFF; font-size:0.1em; position:fixed; ");
+  p.innerHTML = "Mushroom: 0";
+  document.body.appendChild(p);
+
       ////////////////////
     //// INITIALIZE ////
   ////////////////////
 
-  /* This is going to have to be moved to a setup function inside of the Display class or something.
-  Leaving it out here is kind of sloppy. */
   display.buffer.canvas.height = game.world.height;
   display.buffer.canvas.width  = game.world.width;
   display.buffer.imageSmoothingEnabled = false;
 
-  /* Now my image is loaded into the assets manager instead of the display object.
-  The callback starts the game engine when the graphic is loaded. */
-  assets_manager.loadTileSetImage("RBTFINALSS.png", () => {
+  assets_manager.requestJSON(ZONE_PREFIX + game.world.zone_id + ZONE_SUFFIX, (zone) => {
 
-    resize();
-    engine.start();
+    game.world.setup(zone);
+
+    assets_manager.requestImage("WinterTest.png", (image) => {
+
+      assets_manager.tile_set_image = image;
+
+      resize();
+      engine.start();
+
+    });
 
   });
 
   window.addEventListener("keydown", keyDownUp);
-  window.addEventListener("keyup",   keyDownUp);
-  window.addEventListener("resize",  resize);
+  window.addEventListener("keyup"  , keyDownUp);
+  window.addEventListener("resize" , resize);
 
 });
