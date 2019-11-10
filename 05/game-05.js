@@ -336,7 +336,7 @@ Game.Player = function(x, y) {
 
   Game.MovingObject.call(this, x, y, 7, 12);
 
-  Game.Animator.call(this, Game.Player.prototype.frame_sets["idle-left"], 10);
+  Game.Animator.call(this, Game.Player.prototype.frame_sets["idle-left"], 30);
 
   this.jumping     = true;
   this.direction_x = -1;
@@ -397,12 +397,12 @@ Game.Player.prototype = {
 
     } else if (this.direction_x < 0) {
 
-      if (this.velocity_x < -0.1) this.changeFrameSet(this.frame_sets["move-left"], "loop", 5);
+      if (this.velocity_x < -0.1) this.changeFrameSet(this.frame_sets["move-left"], "loop", 3);
       else this.changeFrameSet(this.frame_sets["idle-left"], "pause");
 
     } else if (this.direction_x > 0) {
 
-      if (this.velocity_x > 0.1) this.changeFrameSet(this.frame_sets["move-right"], "loop", 5);
+      if (this.velocity_x > 0.1) this.changeFrameSet(this.frame_sets["move-right"], "loop", 3);
       else this.changeFrameSet(this.frame_sets["idle-right"], "pause");
 
     }
