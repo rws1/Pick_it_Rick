@@ -1,0 +1,31 @@
+
+//stackoverflow
+
+document.addEventListener("keypress", function handler(evt) {
+
+    // evt = evt || window.event; // This line is unnecessary
+
+    var charCode = evt.keyCode || evt.which;
+    var charStr = String.fromCharCode(charCode);
+
+    checkKey(charStr);
+
+    //check loss
+    if (attempt == 0) {
+        gameLost();
+
+        // Remove the listener
+        this.removeEventListener(event.type, handler);
+    }
+
+    //check win
+    underscoreRemain = nameReform.includes("_");
+    if (!underscoreRemain) {
+        gameWon();
+
+        // Remove the listener
+        this.removeEventListener(event.type, handler);
+    }
+
+    document.getElementById("attempt").innerHTML = attempt;
+});
