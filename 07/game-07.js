@@ -264,16 +264,16 @@ Game.MovingObject.prototype = {
 Object.assign(Game.MovingObject.prototype, Game.Object.prototype);
 Game.MovingObject.prototype.constructor = Game.MovingObject;
 
-/* The carrot class extends Game.Object and Game.Animation. */
-Game.Carrot = function(x, y) {
+/* The mushroom class extends Game.Object and Game.Animation. */
+Game.mushroom = function(x, y) {
 
-  Game.Object.call(this, x, y, 37, 38);
-  Game.Animator.call(this, Game.Carrot.prototype.frame_sets["twirl"], 15);
+  Game.Object.call(this, x, y, 97, 96);
+  Game.Animator.call(this, Game.mushroom.prototype.frame_sets["flash"], 15);
 
   this.frame_index = Math.floor(Math.random() * 2);
 
-  /* base_x and base_y are the point around which the carrot revolves. position_x
-  and y are used to track the vector facing away from the base point to give the carrot
+  /* base_x and base_y are the point around which the mushroom revolves. position_x
+  and y are used to track the vector facing away from the base point to give the mushroom
   the floating effect. */
   this.base_x     = x;
   this.base_y     = y;
@@ -281,9 +281,9 @@ Game.Carrot = function(x, y) {
   this.position_y = this.position_x * 2;
 
 };
-Game.Carrot.prototype = {
+Game.mushroom.prototype = {
 
-  frame_sets: { "twirl":[36, 37] },
+  frame_sets: { "flash":[97, 96] },
 
   updatePosition:function() {
 
@@ -296,9 +296,9 @@ Game.Carrot.prototype = {
   }
 
 };
-Object.assign(Game.Carrot.prototype, Game.Animator.prototype);
-Object.assign(Game.Carrot.prototype, Game.Object.prototype);
-Game.Carrot.prototype.constructor = Game.Carrot;
+Object.assign(Game.mushroom.prototype, Game.Animator.prototype);
+Object.assign(Game.mushroom.prototype, Game.Object.prototype);
+Game.mushroom.prototype.constructor = Game.mushroom;
 
 Game.Grass = function(x, y) {
 
@@ -503,8 +503,8 @@ Game.World = function(friction = 0.75, gravity = 4) {
 
   this.zone_id      = "00";
 
-  this.carrots      = [];// the array of carrots in this zone;
-  this.carrot_count = 0;// the number of carrots you have.
+  this.mushrooms      = [];// the array of mushrooms in this zone;
+  this.mushroom_count = 0;// the number of mushrooms you have.
   this.doors        = [];
   this.door         = undefined;
 
@@ -549,7 +549,7 @@ Game.World.prototype = {
 
   setup:function(zone) {
 
-    this.carrots            = new Array();
+    this.mushrooms            = new Array();
     this.doors              = new Array();
     this.grass              = new Array();
     this.collision_map      = zone.collision_map;
@@ -558,10 +558,10 @@ Game.World.prototype = {
     this.rows               = zone.rows;
     this.zone_id            = zone.id;
 
-    for (let index = zone.carrots.length - 1; index > -1; -- index) {
+    for (let index = zone.mushrooms.length - 1; index > -1; -- index) {
 
-      let carrot = zone.carrots[index];
-      this.carrots[index] = new Game.Carrot(carrot[0] * this.tile_set.tile_size + 5, carrot[1] * this.tile_set.tile_size - 2);
+      let mushroom = zone.mushrooms[index];
+      this.mushrooms[index] = new Game.mushroom(mushroom[0] * this.tile_set.tile_size + 5, mushroom[1] * this.tile_set.tile_size - 2);
 
     }
 
@@ -607,17 +607,17 @@ Game.World.prototype = {
 
     this.collideObject(this.player);
 
-    for (let index = this.carrots.length - 1; index > -1; -- index) {
+    for (let index = this.mushrooms.length - 1; index > -1; -- index) {
 
-      let carrot = this.carrots[index];
+      let mushroom = this.mushrooms[index];
 
-      carrot.updatePosition();
-      carrot.animate();
+      mushroom.updatePosition();
+      mushroom.animate();
 
-      if (carrot.collideObject(this.player)) {
+      if (mushroom.collideObject(this.player)) {
 
-        this.carrots.splice(this.carrots.indexOf(carrot), 1);
-        this.carrot_count ++;
+        this.mushrooms.splice(this.mushrooms.indexOf(mushroom), 1);
+        this.mushroom_count ++;
 
       }
 
