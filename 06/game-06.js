@@ -1,4 +1,4 @@
-﻿const Game = function() {
+const Game = function() {
 
   this.world    = new Game.World();
 
@@ -11,14 +11,15 @@
 };
 Game.prototype = { constructor : Game };
 
-Game.Animator = function(frame_set, delay) {
+// Made the default animation type "loop":
+Game.Animator = function(frame_set, delay, mode = "loop") {
 
  this.count       = 0;
  this.delay       = (delay >= 1) ? delay : 1;
  this.frame_set   = frame_set;
  this.frame_index = 0;
  this.frame_value = frame_set[0];
- this.mode        = "pause";
+ this.mode        = mode;
 
 };
 Game.Animator.prototype = {
@@ -106,6 +107,7 @@ Game.Collider = function() {
                if (this.collidePlatformBottom (object, tile_y + tile_size)) return;
                if (this.collidePlatformLeft   (object, tile_x            )) return;
                    this.collidePlatformRight  (object, tile_x + tile_size); break;
+      case  16: this.collidePlatformTop      (object,tile_y + 35     ); break;
 
     }
 
@@ -167,7 +169,8 @@ Game.Collider.prototype = {
 
  };
 
-Game.Frame = function(x, y, width, height, offset_x, offset_y) {
+// Added default values of 0 for offset_x and offset_y
+Game.Frame = function(x, y, width, height, offset_x = 0, offset_y = 0) {
 
   this.x        = x;
   this.y        = y;
@@ -187,10 +190,32 @@ Game.Object = function(x, y, width, height) {
  this.y      = y;
 
 };
-/* I added getCenterX, getCenterY, setCenterX, and setCenterY */
 Game.Object.prototype = {
 
   constructor:Game.Object,
+
+  /* Now does rectangular collision detection. */
+  collideObject:function(object) {
+
+    if (this.getRight()  < object.getLeft()  ||
+        this.getBottom() < object.getTop()   ||
+        this.getLeft()   > object.getRight() ||
+        this.getTop()    > object.getBottom()) return false;
+
+    return true;
+
+  },
+
+  /* Does rectangular collision detection with the center of the object. */
+  collideObjectCenter:function(object) {
+
+    if      (object.getLeft()   < 0          ) { object.setLeft(0);             object.velocity_x = 0; }
+    else if (object.getRight()  > this.width ) { object.setRight(this.width);   object.velocity_x = 0; }
+    if      (object.getTop()    < 0          ) { object.setTop(0);              object.velocity_y = 0; }
+    else if (object.getBottom() > this.height) { object.setBottom(this.height); object.velocity_y = 0; object.jumping = false; }
+
+
+  },
 
   getBottom : function()  { return this.y + this.height;       },
   getCenterX: function()  { return this.x + this.width  * 0.5; },
@@ -207,7 +232,7 @@ Game.Object.prototype = {
 
 };
 
-Game.MovingObject = function(x, y, width, height, velocity_max = 15) {
+Game.MovingObject = function(x, y, width, height, velocity_max = 55) {
 
   Game.Object.call(this, x, y, width, height);
 
@@ -239,6 +264,61 @@ Game.MovingObject.prototype = {
 Object.assign(Game.MovingObject.prototype, Game.Object.prototype);
 Game.MovingObject.prototype.constructor = Game.MovingObject;
 
+/* The Mushroom class extends Game.Object and Game.Animation. */
+Game.Mushroom = function(x, y) {
+
+  Game.Object.call(this, x, y, 97, 96);
+  Game.Animator.call(this, Game.Mushroom.prototype.frame_sets["flash"], 15);
+
+  this.frame_index = Math.floor(Math.random() * 2);
+
+  /* base_x and base_y are the point around which the Mushroom revolves. position_x
+  and y are used to track the vector facing away from the base point to give the Mushroom
+  the floating effect. */
+  this.base_x     = x;
+  this.base_y     = y;
+  this.position_x = Math.random() * Math.PI * 2;
+  this.position_y = this.position_x * 2;
+
+};
+Game.Mushroom.prototype = {
+
+  frame_sets: { "flash":[97, 96] },
+
+  updatePosition:function() {
+
+    this.position_x += 0.1;
+    this.position_y += 0.2;
+
+    this.x = this.base_x + Math.cos(this.position_x) * 2;
+    this.y = this.base_y + Math.sin(this.position_y);
+
+  }
+
+};
+Object.assign(Game.Mushroom.prototype, Game.Animator.prototype);
+Object.assign(Game.Mushroom.prototype, Game.Object.prototype);
+Game.Mushroom.prototype.constructor = Game.Mushroom;
+
+Game.Grass = function(x, y) {
+
+  Game.Animator.call(this, Game.Grass.prototype.frame_sets["wave"], 25);
+
+  this.x = x;
+  this.y = y;
+
+};
+Game.Grass.prototype = {
+
+  frame_sets: {
+
+    "wave":[14, 15, 16, 15]
+
+  }
+
+};
+Object.assign(Game.Grass.prototype, Game.Animator.prototype);
+
 Game.Door = function(door) {
 
  Game.Object.call(this, door.x, door.y, door.width, door.height);
@@ -248,29 +328,15 @@ Game.Door = function(door) {
  this.destination_zone = door.destination_zone;
 
 };
-Game.Door.prototype = {
-
- /* Tests for collision between this door object and a MovingObject. */
- collideObject(object) {
-
-   let center_x = object.getCenterX();
-   let center_y = object.getCenterY();
-
-   if (center_x < this.getLeft() || center_x > this.getRight() ||
-       center_y < this.getTop()  || center_y > this.getBottom()) return false;
-
-   return true;
-
- }
-
-};
+Game.Door.prototype = {};
 Object.assign(Game.Door.prototype, Game.Object.prototype);
 Game.Door.prototype.constructor = Game.Door;
 
 Game.Player = function(x, y) {
 
   Game.MovingObject.call(this, x, y, 7, 12);
-  Game.Animator.call(this, Game.Player.prototype.frame_sets["idle-left"], 10);
+
+  Game.Animator.call(this, Game.Player.prototype.frame_sets["idle-left"], 30);
 
   this.jumping     = true;
   this.direction_x = -1;
@@ -282,22 +348,27 @@ Game.Player.prototype = {
 
   frame_sets: {
 
-    "idle-left" : [0],
-    "jump-left" : [1],
-    "move-left" : [2, 3, 4, 5],
-    "idle-right": [6],
-    "jump-right": [7],
-    "move-right": [8, 9, 10, 11]
+    "idle-left" : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,12,13,14,15],
+
+   "jump-left" : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,12,13,14,15],
+
+   "move-left" : [15, 16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33],
+
+   "idle-right": [34,35,36,37,38,39,40,41,42,43,44,45,46,47],
+
+   "jump-right": [34,35,36,37,38,39,40,41,42,43,44,45,46,47],
+
+   "move-right": [49,50,51,52,53,54,55,56,57,58,59,60,61]
 
   },
 
   jump: function() {
 
     /* Made it so you can only jump if you aren't falling faster than 10px per frame. */
-    if (!this.jumping && this.velocity_y < 10) {
+    if (!this.jumping && this.velocity_y < 50) {
 
       this.jumping     = true;
-      this.velocity_y -= 13;
+      this.velocity_y -= 45;
 
     }
 
@@ -306,14 +377,14 @@ Game.Player.prototype = {
   moveLeft: function() {
 
     this.direction_x = -1;
-    this.velocity_x -= 0.55;
+    this.velocity_x -= 5;
 
   },
 
   moveRight:function(frame_set) {
 
     this.direction_x = 1;
-    this.velocity_x += 0.55;
+    this.velocity_x += 5;
 
   },
 
@@ -326,12 +397,12 @@ Game.Player.prototype = {
 
     } else if (this.direction_x < 0) {
 
-      if (this.velocity_x < -0.1) this.changeFrameSet(this.frame_sets["move-left"], "loop", 5);
+      if (this.velocity_x < -0.1) this.changeFrameSet(this.frame_sets["move-left"], "loop", 3);
       else this.changeFrameSet(this.frame_sets["idle-left"], "pause");
 
     } else if (this.direction_x > 0) {
 
-      if (this.velocity_x > 0.1) this.changeFrameSet(this.frame_sets["move-right"], "loop", 5);
+      if (this.velocity_x > 0.1) this.changeFrameSet(this.frame_sets["move-right"], "loop", 3);
       else this.changeFrameSet(this.frame_sets["idle-right"], "pause");
 
     }
@@ -372,37 +443,73 @@ Game.TileSet = function(columns, tile_size) {
 
   let f = Game.Frame;
 
-  this.frames = [new f(115,  96, 13, 16, 0, -4), // idle-left
-                 new f( 50,  96, 13, 16, 0, -4), // jump-left
-                 new f(102,  96, 13, 16, 0, -4), new f(89, 96, 13, 16, 0, -4), new f(76, 96, 13, 16, 0, -4), new f(63, 96, 13, 16, 0, -4), // walk-left
-                 new f(  0, 112, 13, 16, 0, -4), // idle-right
-                 new f( 65, 112, 13, 16, 0, -4), // jump-right
-                 new f( 13, 112, 13, 16, 0, -4), new f(26, 112, 13, 16, 0, -4), new f(39, 112, 13, 16, 0, -4), new f(52, 112, 13, 16, 0, -4) // walk-right
+
+
+  this.frames = [new f(253, 1721, 60, 80, 10, -58), new f(383, 1721, 60, 80, 10, -58),new f(502, 1721, 60, 80, 10, -58),new f(4, 1847, 60, 80, 10, -58),// idle-left
+                 new f(126, 1847, 60, 80, 10, -58),new f(249, 1847, 60, 80, 10, -58),new f(379, 1851, 60, 80, 10, -58),new f(510, 1847, 60, 80, 10, -58),// idle-left
+                 new f(4, 1974, 60, 80, 10, -58),new f(123, 1977, 60, 80, 10, -58),new f(253, 1977, 60, 80, 10, -58),new f(383, 1977, 60, 80, 10, -58),// idle-left
+                 new f(510, 1977, 60, 80, 10, -58),new f(4, 2100, 60, 80, 10, -58),new f(123, 2104, 60, 80, 10, -58),// idle-left
+
+                 new f(253, 1721, 60, 80, 10, -58), new f(383, 1721, 60, 80, 10, -58),new f(502, 1721, 60, 80, 10, -58),new f(4, 1847, 60, 80, 10, -58),// jump-left
+                 new f(126, 1847, 60, 80, 10, -58),new f(249, 1847, 60, 80, 10, -58),new f(379, 1851, 60, 80, 10, -58),new f(510, 1847, 60, 80, 10, -58),// jump-left
+                 new f(4, 1974, 60, 80, 10, -58),new f(123, 1977, 60, 80, 10, -58),new f(253, 1977, 60, 80, 10, -58),new f(383, 1977, 60, 80, 10, -58),// jump-left
+                 new f(510, 1977, 60, 80, 10, -58),new f(4, 2100, 60, 80, 10, -58),new f(123, 2104, 60, 80, 10, -58),// jump-left
+
+                 new f(513, 696, 60, 80, 10, -58), new f(3, 829, 60, 80, 10, -58), new f(127, 826, 60, 80, 10, -58), new f(257, 826, 60, 80, 10, -58), new f(380, 819, 60, 80, 10, -58),// walk-left
+                 new f(510, 819, 60, 80, 10, -58),new f(3, 952, 60, 80, 10, -58),new f(127, 952, 60, 80, 10, -58),new f(254, 952, 60, 80, 10, -58),// walk-left
+                 new f(383, 952, 60, 80, 10, -58),new f(513, 955, 60, 80, 10, -58),new f(3, 1085, 60, 80, 10, -58),new f(130, 1082, 60, 80, 10, -58),// walk-left
+                 new f(257, 1082, 60, 80, 10, -58),new f(383, 1085, 60, 80, 10, -58),new f(510, 1079, 60, 80, 10, -58),new f(3, 1209, 60, 80, 10, -58),new f(130, 1206, 60, 80, 10, -58),// walk-left
+
+                 new f(257, 2104, 60, 80, 10, -58),  new f(383, 2104, 60, 80, 10, -58), new f(517, 2104, 60, 80, 10, -58), new f(8, 2234, 60, 80, 10, -58),// idle-right
+                 new f(130, 2227, 60, 80, 10, -58),  new f(261, 2234, 60, 80, 10, -58), new f(387, 2230, 60, 80, 10, -58), new f(514, 2234, 60, 80, 10, -58),// idle-right
+                 new f(4, 2361, 60, 80, 10, -58),  new f(130, 2361, 60, 80, 10, -58), new f(387, 2361, 60, 80, 10, -58),// idle-right
+                 new f(517, 2357, 60, 80, 10, -58),  new f(4, 2487, 60, 80, 10, -58), new f(134, 2487, 60, 80, 10, -58),// idle-right
+
+
+                 new f(257, 2104, 60, 80, 10, -58),  new f(383, 2104, 60, 80, 10, -58), new f(517, 2104, 60, 80, 10, -58), new f(8, 2234, 60, 80, 10, -58),// jump-right
+                 new f(130, 2227, 60, 80, 10, -58),  new f(261, 2234, 60, 80, 10, -58), new f(387, 2230, 60, 80, 10, -58), new f(514, 2234, 60, 80, 10, -58),// jump-right
+                 new f(4, 2361, 60, 80, 10, -58),  new f(130, 2361, 60, 80, 10, -58),  new f(387, 2361, 60, 80, 10, -58),// jump-right
+                 new f(517, 2357, 60, 80, 10, -58),  new f(4, 2487, 60, 80, 10, -58), new f(134, 2487, 60, 80, 10, -58),// jump-right
+
+
+                 new f(257, 1212, 60, 80, 10, -58), new f(390, 1209, 60, 80, 10, -58), new f(513, 1212, 60, 80, 10, -58), new f(3, 1336, 60, 80, 10, -58),// walk-right
+                 new f(127, 1339, 60, 80, 10, -58), new f(260, 1339, 60, 80, 10, -58), new f(386, 1339, 60, 80, 10, -58), new f(516, 1339, 60, 80, 10, -58),// walk-right
+                 new f(3, 1469, 60, 80, 10, -58), new f(130, 1469, 60, 80, 10, -58), new f(260, 1469, 60, 80, 10, -58), new f(386, 1496, 60, 80, 10, -58),// walk-right
+                 new f(513, 1469, 60, 80, 10, -58), new f(3, 1595, 60, 80, 10, -58), new f(130, 1595, 60, 80, 10, -58), new f(257, 1595, 60, 80, 10, -58),// walk-right
+                 new f(383, 1595, 60, 80, 10, -58), new f(513, 1592, 60, 80, 10, -58), new f(3, 1719, 60, 80, 10, -58), new f(130, 1722, 60, 80, 10, -58),// walk-right
+
+
+                 new f(377, 591, 60, 65, 0 , -5), new f(504, 591, 60, 65, 0, -5) // Mushroom
+
+
+                 //new f(112, 115, 16,  4), new f(112, 124, 16, 4), new f(112, 119, 16, 4) // grass
                 ];
 
 };
 Game.TileSet.prototype = { constructor: Game.TileSet };
 
-Game.World = function(friction = 0.85, gravity = 2) {
+Game.World = function(friction = 0.75, gravity = 2.4) {
 
-  this.collider  = new Game.Collider();
+  this.collider     = new Game.Collider();
 
-  this.friction  = friction;
-  this.gravity   = gravity;
+  this.friction     = friction;
+  this.gravity      = gravity;
 
-  this.columns   = 12;
-  this.rows      = 9;
+  this.columns      = 24;
+  this.rows         = 18;
 
-  this.tile_set  = new Game.TileSet(8, 16);
-  this.player    = new Game.Player(32, 76);
+  this.tile_set     = new Game.TileSet(128, 128);
+  this.player       = new Game.Player(2700, 2000);
 
-  this.zone_id   = "00";// The current zone.
+  this.zone_id      = "00";
 
-  this.doors     = [];// The array of doors in the level.
-  this.door      = undefined; // If the player enters a door, the game will set this property to that door and the level will be loaded.
+  this.Mushrooms      = [];// the array of Mushrooms in this zone;
+  this.Mushroom_count = 0;// the number of Mushrooms you have.
+  this.doors        = [];
+  this.door         = undefined;
 
-  this.height    = this.tile_set.tile_size * this.rows;
-  this.width     = this.tile_set.tile_size * this.columns;
+  this.height       = this.tile_set.tile_size * this.rows;
+  this.width        = this.tile_set.tile_size * this.columns;
 
 };
 Game.World.prototype = {
@@ -411,8 +518,10 @@ Game.World.prototype = {
 
   collideObject:function(object) {
 
-    /* I got rid of the world boundary collision. Now it's up to the tiles to keep
-    the player from falling out of the world. */
+    if      (object.getLeft()   < 0          ) { object.setLeft(0);             object.velocity_x = 0; }
+    else if (object.getRight()  > this.width ) { object.setRight(this.width);   object.velocity_x = 0; }
+    if      (object.getTop()    < 0          ) { object.setTop(0);              object.velocity_y = 0; }
+    else if (object.getBottom() > this.height) { object.setBottom(this.height); object.velocity_y = 0; object.jumping = false; }
 
     var bottom, left, right, top, value;
 
@@ -438,21 +547,24 @@ Game.World.prototype = {
 
   },
 
-  /* The setup function takes a zone object generated from a zoneXX.json file. It
-  sets all the world values to values of zone. If the player just passed through a
-  door, it uses the this.door variable to change the player's location to wherever
-  that door's destination goes. */
   setup:function(zone) {
 
-    /* Get the new tile maps, the new zone, and reset the doors array. */
-    this.graphical_map      = zone.graphical_map;
+    this.Mushrooms            = new Array();
+    this.doors              = new Array();
+    this.grass              = new Array();
     this.collision_map      = zone.collision_map;
+    this.graphical_map      = zone.graphical_map;
     this.columns            = zone.columns;
     this.rows               = zone.rows;
-    this.doors              = new Array();
     this.zone_id            = zone.id;
 
-    /* Generate new doors. */
+    for (let index = zone.Mushrooms.length - 1; index > -1; -- index) {
+
+      let Mushroom = zone.Mushrooms[index];
+      this.Mushrooms[index] = new Game.Mushroom(Mushroom[0] * this.tile_set.tile_size + 5, Mushroom[1] * this.tile_set.tile_size - 2);
+
+    }
+
     for (let index = zone.doors.length - 1; index > -1; -- index) {
 
       let door = zone.doors[index];
@@ -460,13 +572,15 @@ Game.World.prototype = {
 
     }
 
-    /* If the player entered into a door, this.door will reference that door. Here
-    it will be used to set the player's location to the door's destination. */
+    for (let index = zone.grass.length - 1; index > -1; -- index) {
+
+      let grass = zone.grass[index];
+      this.grass[index] = new Game.Grass(grass[0] * this.tile_set.tile_size, grass[1] * this.tile_set.tile_size + 12);
+
+    }
+
     if (this.door) {
 
-      /* if a destination is equal to -1, that means it won't be used. Since each zone
-      spans from 0 to its width and height, any negative number would be invalid. If
-      a door's destination is -1, the player will keep his current position for that axis. */
       if (this.door.destination_x != -1) {
 
         this.player.setCenterX   (this.door.destination_x);
@@ -493,18 +607,39 @@ Game.World.prototype = {
 
     this.collideObject(this.player);
 
-    /* Here we loop through all the doors in the current zone and check to see
-    if the player is colliding with any. If he does collide with one, we set the
-    world's door variable equal to that door, so we know to use it to load the next zone. */
+    for (let index = this.Mushrooms.length - 1; index > -1; -- index) {
+
+      let Mushroom = this.Mushrooms[index];
+
+      Mushroom.updatePosition();
+      Mushroom.animate();
+
+      if (Mushroom.collideObject(this.player)) {
+
+        this.Mushrooms.splice(this.Mushrooms.indexOf(Mushroom), 1);
+        this.Mushroom_count ++;
+
+      }
+
+    }
+
     for(let index = this.doors.length - 1; index > -1; -- index) {
 
       let door = this.doors[index];
 
-      if (door.collideObject(this.player)) {
+      if (door.collideObjectCenter(this.player)) {
 
         this.door = door;
 
       };
+
+    }
+
+    for (let index = this.grass.length - 1; index > -1; -- index) {
+
+      let grass = this.grass[index];
+
+      grass.animate();
 
     }
 
