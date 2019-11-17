@@ -105,18 +105,7 @@ window.addEventListener("load", function(event) {
     game.world.player.x + Math.floor(game.world.player.width * 0.5 - frame.width * 0.5) + frame.offset_x,
     game.world.player.y + frame.offset_y, frame.width, frame.height);
 
-    for (let index = game.world.grass.length - 1; index > -1; -- index) {
 
-      let grass = game.world.grass[index];
-
-      frame = game.world.tile_set.frames[grass.frame_value];
-
-      display.drawObject(assets_manager.tile_set_image,
-      frame.x, frame.y,
-      grass.x + frame.offset_x,
-      grass.y + frame.offset_y, frame.width, frame.height);
-
-    }
     p.setAttribute("style", "color:#FFFFFF; font-size:3.0em; position:fixed; ");
     p.innerHTML = "Mushrooms: " + game.world.mushroom_count;
 
