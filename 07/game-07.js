@@ -1,3 +1,6 @@
+
+
+/*     */
 const Game = function() {
 
   this.world    = new Game.World();
@@ -22,6 +25,9 @@ Game.Animator = function(frame_set, delay, mode = "loop") {
  this.mode        = mode;
 
 };
+
+
+
 Game.Animator.prototype = {
 
  constructor:Game.Animator,
@@ -36,6 +42,9 @@ Game.Animator.prototype = {
    }
 
  },
+
+
+
 
  changeFrameSet(frame_set, mode, delay = 10, frame_index = 0) {
 
@@ -68,6 +77,8 @@ Game.Animator.prototype = {
 
 };
 
+
+
 Game.Collider = function() {
 
   /* I changed this so all the checks happen in y first order. */
@@ -80,7 +91,7 @@ Game.Collider = function() {
       case  3: if (this.collidePlatformTop    (object, tile_y            )) return;
                    this.collidePlatformRight  (object, tile_x + tile_size); break;
       case  4:     this.collidePlatformBottom (object, tile_y + tile_size); break;
-      case  5: if (this.collidePlatformTop    (object, tile_y            )) return;
+      case  5: if (this.collidePlatformTop    (object, tile_y + 35           )) return;
                    this.collidePlatformBottom (object, tile_y + tile_size); break;
       case  6: if (this.collidePlatformRight  (object, tile_x + tile_size)) return;
                    this.collidePlatformBottom (object, tile_y + tile_size); break;
@@ -114,6 +125,7 @@ Game.Collider = function() {
   }
 
 };
+
 Game.Collider.prototype = {
 
   constructor: Game.Collider,
@@ -194,7 +206,7 @@ Game.Object.prototype = {
 
   constructor:Game.Object,
 
-  /* Now does rectangular collision detection. */
+  /* Now does player collision detection. */
   collideObject:function(object) {
 
     if (this.getRight()  < object.getLeft()  ||
@@ -206,26 +218,13 @@ Game.Object.prototype = {
 
   },
 
-  /* Does rectangular collision detection with the center of the object. */
-  collideObjectCenter:function(object) {
 
-    if      (object.getLeft()   < 0          ) { object.setLeft(0);             object.velocity_x = 0; }
-    else if (object.getRight()  > this.width ) { object.setRight(this.width);   object.velocity_x = 0; }
-    if      (object.getTop()    < 0          ) { object.setTop(0);              object.velocity_y = 0; }
-    else if (object.getBottom() > this.height) { object.setBottom(this.height); object.velocity_y = 0; object.jumping = false; }
-
-
-  },
 
   getBottom : function()  { return this.y + this.height;       },
-  getCenterX: function()  { return this.x + this.width  * 0.5; },
-  getCenterY: function()  { return this.y + this.height * 0.5; },
   getLeft   : function()  { return this.x;                     },
   getRight  : function()  { return this.x + this.width;        },
   getTop    : function()  { return this.y;                     },
   setBottom : function(y) { this.y = y - this.height;          },
-  setCenterX: function(x) { this.x = x - this.width  * 0.5;    },
-  setCenterY: function(y) { this.y = y - this.height * 0.5;    },
   setLeft   : function(x) { this.x = x;                        },
   setRight  : function(x) { this.x = x - this.width;           },
   setTop    : function(y) { this.y = y;                        }
@@ -244,23 +243,25 @@ Game.MovingObject = function(x, y, width, height, velocity_max = 55) {
   this.y_old        = y;
 
 };
-/* I added setCenterX, setCenterY, getCenterX, and getCenterY */
+
+
+
+
 Game.MovingObject.prototype = {
 
   getOldBottom : function()  { return this.y_old + this.height;       },
-  getOldCenterX: function()  { return this.x_old + this.width  * 0.5; },
-  getOldCenterY: function()  { return this.y_old + this.height * 0.5; },
   getOldLeft   : function()  { return this.x_old;                     },
   getOldRight  : function()  { return this.x_old + this.width;        },
   getOldTop    : function()  { return this.y_old;                     },
   setOldBottom : function(y) { this.y_old = y    - this.height;       },
-  setOldCenterX: function(x) { this.x_old = x    - this.width  * 0.5; },
-  setOldCenterY: function(y) { this.y_old = y    - this.height * 0.5; },
   setOldLeft   : function(x) { this.x_old = x;                        },
   setOldRight  : function(x) { this.x_old = x    - this.width;        },
   setOldTop    : function(y) { this.y_old = y;                        }
 
 };
+
+
+
 Object.assign(Game.MovingObject.prototype, Game.Object.prototype);
 Game.MovingObject.prototype.constructor = Game.MovingObject;
 
@@ -281,6 +282,11 @@ Game.mushroom = function(x, y) {
   this.position_y = this.position_x * 2;
 
 };
+
+
+
+
+
 Game.mushroom.prototype = {
 
   frame_sets: { "flash":[97, 96] },
@@ -296,28 +302,17 @@ Game.mushroom.prototype = {
   }
 
 };
+
+
 Object.assign(Game.mushroom.prototype, Game.Animator.prototype);
 Object.assign(Game.mushroom.prototype, Game.Object.prototype);
 Game.mushroom.prototype.constructor = Game.mushroom;
 
-Game.Grass = function(x, y) {
 
-  Game.Animator.call(this, Game.Grass.prototype.frame_sets["wave"], 25);
 
-  this.x = x;
-  this.y = y;
 
-};
-Game.Grass.prototype = {
 
-  frame_sets: {
-
-    "wave":[14, 15, 16, 15]
-
-  }
-
-};
-Object.assign(Game.Grass.prototype, Game.Animator.prototype);
+Object.assign(Game.Animator.prototype);
 
 Game.Door = function(door) {
 
@@ -481,9 +476,7 @@ Game.TileSet = function(columns, tile_size) {
 
                  new f(377, 591, 60, 65, 0 , -5), new f(504, 591, 60, 65, 0, -5) // Mushroom
 
-
-                 //new f(112, 115, 16,  4), new f(112, 124, 16, 4), new f(112, 119, 16, 4) // grass
-                ];
+                 ];
 
 };
 Game.TileSet.prototype = { constructor: Game.TileSet };
@@ -551,7 +544,7 @@ Game.World.prototype = {
 
     this.mushrooms            = new Array();
     this.doors              = new Array();
-    this.grass              = new Array();
+
     this.collision_map      = zone.collision_map;
     this.graphical_map      = zone.graphical_map;
     this.columns            = zone.columns;
@@ -572,12 +565,6 @@ Game.World.prototype = {
 
     }
 
-    for (let index = zone.grass.length - 1; index > -1; -- index) {
-
-      let grass = zone.grass[index];
-      this.grass[index] = new Game.Grass(grass[0] * this.tile_set.tile_size, grass[1] * this.tile_set.tile_size + 12);
-
-    }
 
     if (this.door) {
 
@@ -635,13 +622,7 @@ Game.World.prototype = {
 
     }
 
-    for (let index = this.grass.length - 1; index > -1; -- index) {
 
-      let grass = this.grass[index];
-
-      grass.animate();
-
-    }
 
     this.player.updateAnimation();
 
