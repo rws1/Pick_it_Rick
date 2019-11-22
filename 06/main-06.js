@@ -117,7 +117,7 @@ window.addEventListener("load", function(event) {
       grass.y + frame.offset_y, frame.width, frame.height);
 
     }
-    p.setAttribute("style", "color:#FFFFFF; font-size:0.1em; position:fixed; ");
+    p.setAttribute("style", "color:#FFFFFF; font-size:3.0em; position:fixed; ");
     p.innerHTML = "Mushrooms: " + game.world.Mushroom_count;
 
     display.render();
@@ -161,7 +161,7 @@ window.addEventListener("load", function(event) {
   var engine         = new Engine(1000/30, render, update);
 
   var p              = document.createElement("p");
-  p.setAttribute("style", "color:#FFFFFF; font-size:0.1em; position:fixed; ");
+  p.setAttribute("style", "color:#FFFFFF; font-size:3.0em; position:fixed; ");
   p.innerHTML = "Mushroom: 0";
   document.body.appendChild(p);
 
