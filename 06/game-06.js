@@ -561,7 +561,7 @@ Game.World.prototype = {
     for (let index = zone.Mushrooms.length - 1; index > -1; -- index) {
 
       let Mushroom = zone.Mushrooms[index];
-      this.Mushrooms[index] = new Game.Mushroom(Mushroom[0] * this.tile_set.tile_size + 5, Mushroom[1] * this.tile_set.tile_size - 2);
+      this.Mushrooms[index] = new Game.Mushroom(Mushroom[0] * this.tile_set.tile_size + 5, Mushroom[1] * this.tile_set.tile_size - 40);
 
     }
 
