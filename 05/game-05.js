@@ -264,16 +264,16 @@ Game.MovingObject.prototype = {
 Object.assign(Game.MovingObject.prototype, Game.Object.prototype);
 Game.MovingObject.prototype.constructor = Game.MovingObject;
 
-/* The carrot class extends Game.Object and Game.Animation. */
-Game.Carrot = function(x, y) {
+/* The Mushroom class extends Game.Object and Game.Animation. */
+Game.Mushroom = function(x, y) {
 
   Game.Object.call(this, x, y, 37, 38);
-  Game.Animator.call(this, Game.Carrot.prototype.frame_sets["twirl"], 15);
+  Game.Animator.call(this, Game.Mushroom.prototype.frame_sets["twirl"], 15);
 
   this.frame_index = Math.floor(Math.random() * 2);
 
-  /* base_x and base_y are the point around which the carrot revolves. position_x
-  and y are used to track the vector facing away from the base point to give the carrot
+  /* base_x and base_y are the point around which the Mushroom revolves. position_x
+  and y are used to track the vector facing away from the base point to give the Mushroom
   the floating effect. */
   this.base_x     = x;
   this.base_y     = y;
@@ -281,7 +281,7 @@ Game.Carrot = function(x, y) {
   this.position_y = this.position_x * 2;
 
 };
-Game.Carrot.prototype = {
+Game.Mushroom.prototype = {
 
   frame_sets: { "twirl":[36, 37] },
 
@@ -296,9 +296,9 @@ Game.Carrot.prototype = {
   }
 
 };
-Object.assign(Game.Carrot.prototype, Game.Animator.prototype);
-Object.assign(Game.Carrot.prototype, Game.Object.prototype);
-Game.Carrot.prototype.constructor = Game.Carrot;
+Object.assign(Game.Mushroom.prototype, Game.Animator.prototype);
+Object.assign(Game.Mushroom.prototype, Game.Object.prototype);
+Game.Mushroom.prototype.constructor = Game.Mushroom;
 
 Game.Grass = function(x, y) {
 
@@ -336,7 +336,7 @@ Game.Player = function(x, y) {
 
   Game.MovingObject.call(this, x, y, 7, 12);
 
-  Game.Animator.call(this, Game.Player.prototype.frame_sets["idle-left"], 30);
+  Game.Animator.call(this, Game.Player.prototype.frame_sets["idle-left"], 10);
 
   this.jumping     = true;
   this.direction_x = -1;
@@ -348,17 +348,17 @@ Game.Player.prototype = {
 
   frame_sets: {
 
-    "idle-left" : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,12,13,14,15],
+    "idle-left" : [0],
 
-   "jump-left" : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,12,13,14,15],
+   "jump-left" : [0],
 
-   "move-left" : [15, 16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33],
+   "move-left" : [0, 1,2, 3, 4,5,6,7,8,9,10,11,12,13,14,15,16,17],
 
-   "idle-right": [34,35,36,37,38,39,40,41,42,43,44,45,46,47],
+   "idle-right": [18],
 
-   "jump-right": [34,35,36,37,38,39,40,41,42,43,44,45,46,47],
+   "jump-right": [18],
 
-   "move-right": [49,50,51,52,53,54,55,56,57,58,59,60,61]
+   "move-right": [18,19,20, 21,22,23,24,25,26,27,28,29,31,32]
 
   },
 
@@ -397,12 +397,12 @@ Game.Player.prototype = {
 
     } else if (this.direction_x < 0) {
 
-      if (this.velocity_x < -0.1) this.changeFrameSet(this.frame_sets["move-left"], "loop", 3);
+      if (this.velocity_x < -0.1) this.changeFrameSet(this.frame_sets["move-left"], "loop", 5);
       else this.changeFrameSet(this.frame_sets["idle-left"], "pause");
 
     } else if (this.direction_x > 0) {
 
-      if (this.velocity_x > 0.1) this.changeFrameSet(this.frame_sets["move-right"], "loop", 3);
+      if (this.velocity_x > 0.1) this.changeFrameSet(this.frame_sets["move-right"], "loop", 5);
       else this.changeFrameSet(this.frame_sets["idle-right"], "pause");
 
     }
@@ -445,44 +445,20 @@ Game.TileSet = function(columns, tile_size) {
 
 
 
-  this.frames = [new f(253, 1721, 60, 80, 10, -58), new f(383, 1721, 60, 80, 10, -58),new f(502, 1721, 60, 80, 10, -58),new f(4, 1847, 60, 80, 10, -58),// idle-left
-                 new f(126, 1847, 60, 80, 10, -58),new f(249, 1847, 60, 80, 10, -58),new f(379, 1851, 60, 80, 10, -58),new f(510, 1847, 60, 80, 10, -58),// idle-left
-                 new f(4, 1974, 60, 80, 10, -58),new f(123, 1977, 60, 80, 10, -58),new f(253, 1977, 60, 80, 10, -58),new f(383, 1977, 60, 80, 10, -58),// idle-left
-                 new f(510, 1977, 60, 80, 10, -58),new f(4, 2100, 60, 80, 10, -58),new f(123, 2104, 60, 80, 10, -58),// idle-left
-
-                 new f(253, 1721, 60, 80, 10, -58), new f(383, 1721, 60, 80, 10, -58),new f(502, 1721, 60, 80, 10, -58),new f(4, 1847, 60, 80, 10, -58),// jump-left
-                 new f(126, 1847, 60, 80, 10, -58),new f(249, 1847, 60, 80, 10, -58),new f(379, 1851, 60, 80, 10, -58),new f(510, 1847, 60, 80, 10, -58),// jump-left
-                 new f(4, 1974, 60, 80, 10, -58),new f(123, 1977, 60, 80, 10, -58),new f(253, 1977, 60, 80, 10, -58),new f(383, 1977, 60, 80, 10, -58),// jump-left
-                 new f(510, 1977, 60, 80, 10, -58),new f(4, 2100, 60, 80, 10, -58),new f(123, 2104, 60, 80, 10, -58),// jump-left
-
-                 new f(513, 696, 60, 80, 10, -58), new f(3, 829, 60, 80, 10, -58), new f(127, 826, 60, 80, 10, -58), new f(257, 826, 60, 80, 10, -58), new f(380, 819, 60, 80, 10, -58),// walk-left
-                 new f(510, 819, 60, 80, 10, -58),new f(3, 952, 60, 80, 10, -58),new f(127, 952, 60, 80, 10, -58),new f(254, 952, 60, 80, 10, -58),// walk-left
-                 new f(383, 952, 60, 80, 10, -58),new f(513, 955, 60, 80, 10, -58),new f(3, 1085, 60, 80, 10, -58),new f(130, 1082, 60, 80, 10, -58),// walk-left
-                 new f(257, 1082, 60, 80, 10, -58),new f(383, 1085, 60, 80, 10, -58),new f(510, 1079, 60, 80, 10, -58),new f(3, 1209, 60, 80, 10, -58),new f(130, 1206, 60, 80, 10, -58),// walk-left
-
-                 new f(257, 2104, 60, 80, 10, -58),  new f(383, 2104, 60, 80, 10, -58), new f(517, 2104, 60, 80, 10, -58), new f(8, 2234, 60, 80, 10, -58),// idle-right
-                 new f(130, 2227, 60, 80, 10, -58),  new f(261, 2234, 60, 80, 10, -58), new f(387, 2230, 60, 80, 10, -58), new f(514, 2234, 60, 80, 10, -58),// idle-right
-                 new f(4, 2361, 60, 80, 10, -58),  new f(130, 2361, 60, 80, 10, -58), new f(387, 2361, 60, 80, 10, -58),// idle-right
-                 new f(517, 2357, 60, 80, 10, -58),  new f(4, 2487, 60, 80, 10, -58), new f(134, 2487, 60, 80, 10, -58),// idle-right
-
-
-                 new f(257, 2104, 60, 80, 10, -58),  new f(383, 2104, 60, 80, 10, -58), new f(517, 2104, 60, 80, 10, -58), new f(8, 2234, 60, 80, 10, -58),// jump-right
-                 new f(130, 2227, 60, 80, 10, -58),  new f(261, 2234, 60, 80, 10, -58), new f(387, 2230, 60, 80, 10, -58), new f(514, 2234, 60, 80, 10, -58),// jump-right
-                 new f(4, 2361, 60, 80, 10, -58),  new f(130, 2361, 60, 80, 10, -58),  new f(387, 2361, 60, 80, 10, -58),// jump-right
-                 new f(517, 2357, 60, 80, 10, -58),  new f(4, 2487, 60, 80, 10, -58), new f(134, 2487, 60, 80, 10, -58),// jump-right
-
-
-                 new f(257, 1212, 60, 80, 10, -58), new f(390, 1209, 60, 80, 10, -58), new f(513, 1212, 60, 80, 10, -58), new f(3, 1336, 60, 80, 10, -58),// walk-right
-                 new f(127, 1339, 60, 80, 10, -58), new f(260, 1339, 60, 80, 10, -58), new f(386, 1339, 60, 80, 10, -58), new f(516, 1339, 60, 80, 10, -58),// walk-right
-                 new f(3, 1469, 60, 80, 10, -58), new f(130, 1469, 60, 80, 10, -58), new f(260, 1469, 60, 80, 10, -58), new f(386, 1496, 60, 80, 10, -58),// walk-right
-                 new f(513, 1469, 60, 80, 10, -58), new f(3, 1595, 60, 80, 10, -58), new f(130, 1595, 60, 80, 10, -58), new f(257, 1595, 60, 80, 10, -58),// walk-right
-                 new f(383, 1595, 60, 80, 10, -58), new f(513, 1592, 60, 80, 10, -58), new f(3, 1719, 60, 80, 10, -58), new f(130, 1722, 60, 80, 10, -58),// walk-right
-
-
-                 new f(377, 591, 60, 65, 0 , -5), new f(504, 591, 60, 65, 0, -5) // Mushroom
-
-
-                 //new f(112, 115, 16,  4), new f(112, 124, 16, 4), new f(112, 119, 16, 4) // grass
+  this.frames = [new f(3, 1215, 60, 65, 0, -50), // idle-left
+                  new f(3, 1215, 60, 65, 0, -50), // jump-left
+                  new f(514, 702, 60, 70, 0, -55), new f(5, 831, 60, 70, 0, -55), new f(129, 957, 60, 70, 0, -55), new f(258, 828, 60, 70, 0, -55), new f(385, 831, 60, 70, 0, -55),
+                  new f(511, 828, 60, 70, 0, -55),new f(3, 955, 60, 70, 0, -55),new f(129, 957, 60, 70, 0, -55),new f(255, 957, 60, 70, 0, -55),
+                  new f(382, 957, 60, 70, 0, -55),new f(508, 955, 60, 70, 0, -55),new f(3, 1086, 60, 70, 0, -55),new f(126, 1081, 60, 70, 0, -55),
+                  new f(253, 1084, 60, 70, 0, -55),new f(387, 1086, 60, 70, 0, -55),new f(516, 1081, 60, 70, 0, -55),new f(3, 1210, 60, 70, 0, -55),new f(132, 1215, 60, 70, 0, -55),// walk-left
+                   new f(258, 1213, 60, 65, 0, -55), // idle-right
+                  new f(382, 1210, 60, 65, 0, -55), // jump-right
+                  new f(258, 1213, 60, 65, 0, -55), new f(387, 1213, 60, 65, 0, -55), new f(511, 1213, 60, 65, 0, -55), new f(3, 1339, 60, 65, 0, -55),
+                 new f(129, 1342, 60, 65, 0, -55), new f(255, 1342, 60, 65, 0, -55), new f(387, 1339, 60, 65, 0, -55), new f(514, 1339, 60, 65, 0, -55),
+                 new f(5, 1468, 60, 65, 0, -55), new f(126, 1592, 60, 65, 0, -55), new f(253, 1595, 60, 65, 0, -55), new f(511, 1597, 60, 65, 0, -55),
+                 new f(3, 1724, 60, 65, 0, -55), new f(129, 1724, 60, 65, 0, -55),// walk-right
+                 new f( 383, 594, 60, 65, 0 , -5), new f(508, 594, 60, 65, 0, -5), // Mushroom
+                 new f(112, 115, 16,  4), new f(112, 124, 16, 4), new f(112, 119, 16, 4) // grass
                 ];
 
 };
@@ -503,8 +479,8 @@ Game.World = function(friction = 0.75, gravity = 4) {
 
   this.zone_id      = "00";
 
-  this.carrots      = [];// the array of carrots in this zone;
-  this.carrot_count = 0;// the number of carrots you have.
+  this.Mushrooms      = [];// the array of Mushrooms in this zone;
+  this.Mushroom_count = 0;// the number of Mushrooms you have.
   this.doors        = [];
   this.door         = undefined;
 
@@ -549,7 +525,7 @@ Game.World.prototype = {
 
   setup:function(zone) {
 
-    this.carrots            = new Array();
+    this.Mushrooms            = new Array();
     this.doors              = new Array();
     this.grass              = new Array();
     this.collision_map      = zone.collision_map;
@@ -558,10 +534,10 @@ Game.World.prototype = {
     this.rows               = zone.rows;
     this.zone_id            = zone.id;
 
-    for (let index = zone.carrots.length - 1; index > -1; -- index) {
+    for (let index = zone.Mushrooms.length - 1; index > -1; -- index) {
 
-      let carrot = zone.carrots[index];
-      this.carrots[index] = new Game.Carrot(carrot[0] * this.tile_set.tile_size + 5, carrot[1] * this.tile_set.tile_size - 2);
+      let Mushroom = zone.Mushrooms[index];
+      this.Mushrooms[index] = new Game.Mushroom(Mushroom[0] * this.tile_set.tile_size + 5, Mushroom[1] * this.tile_set.tile_size - 2);
 
     }
 
@@ -607,17 +583,17 @@ Game.World.prototype = {
 
     this.collideObject(this.player);
 
-    for (let index = this.carrots.length - 1; index > -1; -- index) {
+    for (let index = this.Mushrooms.length - 1; index > -1; -- index) {
 
-      let carrot = this.carrots[index];
+      let Mushroom = this.Mushrooms[index];
 
-      carrot.updatePosition();
-      carrot.animate();
+      Mushroom.updatePosition();
+      Mushroom.animate();
 
-      if (carrot.collideObject(this.player)) {
+      if (Mushroom.collideObject(this.player)) {
 
-        this.carrots.splice(this.carrots.indexOf(carrot), 1);
-        this.carrot_count ++;
+        this.Mushrooms.splice(this.Mushrooms.indexOf(Mushroom), 1);
+        this.Mushroom_count ++;
 
       }
 
