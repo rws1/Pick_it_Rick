@@ -86,16 +86,16 @@ window.addEventListener("load", function(event) {
     display.drawMap   (assets_manager.tile_set_image,
     game.world.tile_set.columns, game.world.graphical_map, game.world.columns,  game.world.tile_set.tile_size);
 
-    for (let index = game.world.carrots.length - 1; index > -1; -- index) {
+    for (let index = game.world.Mushrooms.length - 1; index > -1; -- index) {
 
-      let carrot = game.world.carrots[index];
+      let Mushroom = game.world.Mushrooms[index];
 
-      frame = game.world.tile_set.frames[carrot.frame_value];
+      frame = game.world.tile_set.frames[Mushroom.frame_value];
 
       display.drawObject(assets_manager.tile_set_image,
       frame.x, frame.y,
-      carrot.x + Math.floor(carrot.width * 0.5 - frame.width * 0.5) + frame.offset_x,
-      carrot.y + frame.offset_y, frame.width, frame.height);
+      Mushroom.x + Math.floor(Mushroom.width * 0.5 - frame.width * 0.5) + frame.offset_x,
+      Mushroom.y + frame.offset_y, frame.width, frame.height);
 
     }
 
@@ -119,7 +119,7 @@ window.addEventListener("load", function(event) {
 
     }
     p.setAttribute("style", "color:#FFFFFF; font-size:0.1em; position:fixed; ");
-    p.innerHTML = "Mushrooms: " + game.world.carrot_count;
+    p.innerHTML = "Mushrooms: " + game.world.Mushroom_count;
 
     display.render();
 
