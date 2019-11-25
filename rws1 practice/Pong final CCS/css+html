@@ -1,5 +1,0 @@
-(HTML)
-<canvas id="myCanvas" width="480" height="320"></canvas>
-
-CSS
-canvas {background :#eee; }
