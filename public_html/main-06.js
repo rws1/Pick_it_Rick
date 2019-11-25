@@ -2,14 +2,12 @@ window.addEventListener("load", function(event) {
 
   "use strict";
 
-  //// CONSTANTS ////
+  //Constant
 
   const ZONE_PREFIX = "06/zone";
   const ZONE_SUFFIX = ".json";
 
-      /////////////////
-    //// CLASSES ////
-  /////////////////
+    //Classes
 
   const AssetsManager = function() {
 
@@ -52,9 +50,7 @@ window.addEventListener("load", function(event) {
 
   };
 
-      ///////////////////
-    //// FUNCTIONS ////
-  ///////////////////
+     //Functions
 
   var audio = new Audio('croc.mp3');
   audio.play();
@@ -144,9 +140,7 @@ window.addEventListener("load", function(event) {
 
   };
 
-      /////////////////
-    //// OBJECTS ////
-  /////////////////
+      //Objects
 
   var assets_manager = new AssetsManager();
   var controller     = new Controller();
@@ -159,9 +153,7 @@ window.addEventListener("load", function(event) {
   p.innerHTML = "Mushroom: 0";
   document.body.appendChild(p);
 
-      ////////////////////
-    //// INITIALIZE ////
-  ////////////////////
+     //To initialise
 
   display.buffer.canvas.height = game.world.height;
   display.buffer.canvas.width  = game.world.width;
