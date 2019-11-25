@@ -1,11 +1,7 @@
 # Pick_it_Rick
-
-
-Pick It Rick
-============
+==============
 
 PickItRick is an opensource game and held under a MIT LICENSE.
-
 
 Game Preview
 -------------
