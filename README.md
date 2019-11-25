@@ -1,4 +1,4 @@
-# Pick_it_Rick.github.io
+# Pick_it_Rick
 
 
 Pick It Rick
