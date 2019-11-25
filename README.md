@@ -1,13 +1,26 @@
 # Pick_it_Rick.github.io
 
 
-PickItRick is an opensource game and held under a MIT LICENSE:
+Pick It Rick
+============
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files 
-(the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, 
-publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
-subject to the following conditions:
+PickItRick is an opensource game and held under a MIT LICENSE.
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-Pick It Rick It is a HTML / JavaScript based MMOPG.
+Game Preview
+-------------
+A preview of a test subject playing the game can be found here : https://www.youtube.com/watch?v=BndVy8rFfko
+
+
+License
+-------
+
+Code is licensed under an MIT LICENSE.
+See the LICENSE file for details.
+
+
+Credits
+-------
+ Created by Robert Stone, Rachana Patel and Kuda Mugara. 
+
+The game was created using information from the Web Programming Course at Heriot Watt University, but also heavily influenced by using guides from PothOnProgramming, a youtube channel that can be found here https://www.youtube.com/channel/UCdS3ojA8RL8t1r18Gj1cl6w.  
