@@ -1,0 +1,1 @@
+<?php define("_commentConfEnabled","1");define("_commentConfEmailNotify","1");define("_commentConfEmailAddress","");define("_commentConfCaptcha","1");define("_commentConfAscending","1");define("_commentConfFormAbove","");define("_commentConfDisplayMode","0");define("_commentConfMessage","");define("_commentConfPerPage","5");?>

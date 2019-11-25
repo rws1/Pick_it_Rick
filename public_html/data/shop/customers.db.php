@@ -1,0 +1,1 @@
+id;nazwa;ulica;zip;miejscowosc;email;telefon;haslo;firma;nip;newsletter;pole4;imie;state;country;

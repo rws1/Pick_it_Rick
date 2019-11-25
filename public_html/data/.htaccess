@@ -1,0 +1,2 @@
+Options -Indexes
+RedirectMatch 404 /data/db/|/data/cache/|/data/shop/(.*).php|/data/shop/download/|/data/backups/|/data/blog/|/data/guide/

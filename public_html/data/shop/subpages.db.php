@@ -1,0 +1,4 @@
+id;name;root;value;priority;template;seo;display;
+1;Shop Homepage;0;{%products_allproducts%};;;;1;
+2;Terms of Use;0;<h2>Terms of Use</h2>Lorem ipsum dolor sit amet, libero et, velit vivamus vel, nec laoreet vivamus magna. Voluptatem duis arcu vestibulum, urna nostrum vitae est aliquet nulla, elit sit tristique aliquet eget. <br /><br />Orci maecenas. Tincidunt tempus, integer viverra lorem praesent magna parturient, aliquam integer eu viverra consectetuer sed natoque, nulla habitasse pulvinar aenean tempor excepteur.;;;;1;
+3;Privacy Policy;0;<h2>Privacy Policy</h2>Lorem ipsum dolor sit amet, libero et, velit vivamus vel, nec laoreet vivamus magna. Voluptatem duis arcu vestibulum, urna nostrum vitae est aliquet nulla, elit sit tristique aliquet eget. <br /><br />Orci maecenas. Tincidunt tempus, integer viverra lorem praesent magna parturient, aliquam integer eu viverra consectetuer sed natoque, nulla habitasse pulvinar aenean tempor excepteur.;;;;0;
